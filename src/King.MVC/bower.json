@@ -1,0 +1,16 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "v3.3.7",
+    "jQuery": "3.2.1",
+    "font-awesome": "Font-Awesome#v4.7.0",
+    "Ionicons": "ionicons#v2.0.1",
+    "iCheck": "1.0.2",
+    "jstree": "3.3.4",
+    "bootstrap-table": "1.11.1",
+    "layer": "3.0",
+    "moment": "2.18.1",
+    "select2": "4.0.3"
+  }
+}

@@ -1,0 +1,97 @@
+﻿@model Task<List<King.Application.MenuApp.Dtos.MenuTreeDto>>
+<li class="header">MAIN NAVIGATION</li>
+
+@foreach (var item in Model.Result)
+{
+    <li class="treeview active">
+        <a href="@(string.IsNullOrEmpty(item.Url)?"#":item.Url)">
+            <i class="@(string.IsNullOrEmpty(item.Icon)?"fa fa-circle-o":item.Icon)"></i> <span>@item.Name</span>
+            @if (item.Childs.Count > 0)
+            {
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            }
+        </a>
+        @Html.Raw(item.Childs.Count > 0 ? "<ul class=\"treeview-menu\">" : "")
+        @foreach (var item2 in item.Childs)
+        {
+        <li>
+            <a href="@(string.IsNullOrEmpty(item2.Url)?"#":item2.Url)">
+                <i class="@(string.IsNullOrEmpty(item2.Icon)?"fa fa-circle-o":item2.Icon)"></i> <span>@item2.Name</span>
+                @if (item2.Childs.Count > 0)
+                {
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                }
+            </a>
+            @Html.Raw(item2.Childs.Count > 0 ? "<ul class=\"treeview-menu\">" : "")
+            @foreach (var item3 in item2.Childs)
+            {
+            <li>
+                <a href="@(string.IsNullOrEmpty(item3.Url)?"#":item3.Url)">
+                    <i class="@(string.IsNullOrEmpty(item3.Icon)?"fa fa-circle-o":item3.Icon)"></i> <span>@item3.Name</span>
+                    @if (item3.Childs.Count > 0)
+                    {
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    }
+                </a>
+
+                @Html.Raw(item3.Childs.Count > 0 ? "<ul class=\"treeview-menu\">" : "")
+                @foreach (var item4 in item3.Childs)
+                {
+                <li>
+                    <a href="@(string.IsNullOrEmpty(item4.Url)?"#":item4.Url)">
+                        <i class="@(string.IsNullOrEmpty(item4.Icon)?"fa fa-circle-o":item4.Icon)"></i> <span>@item4.Name</span>
+                        @if (item4.Childs.Count > 0)
+                        {
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        }
+                    </a>
+                    @Html.Raw(item4.Childs.Count > 0 ? "<ul class=\"treeview-menu\">" : "")
+
+                    @foreach (var item5 in item4.Childs)
+                    {
+                    <li>
+                        <a href="@(string.IsNullOrEmpty(item5.Url)?"#":item5.Url)">
+                            <i class="@(string.IsNullOrEmpty(item5.Icon)?"fa fa-circle-o":item5.Icon)"></i> <span>@item5.Name</span>
+                            @if (item5.Childs.Count > 0)
+                            {
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            }
+                        </a>
+                    </li>
+                    }
+                    @Html.Raw(item4.Childs.Count > 0 ? "</ul>" : "")
+
+                    </li>
+                }
+                @Html.Raw(item3.Childs.Count > 0 ? "</ul>" : "")
+                </li>
+            }
+            @Html.Raw(item2.Childs.Count > 0 ? "</ul>" : "")
+            </li>
+        }
+        @Html.Raw(item.Childs.Count > 0 ? "</ul>" : "")
+
+        </li>
+}
+<li class="active treeview">
+    <a href="#">
+        <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+        <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+        </span>
+    </a>
+    <ul class="treeview-menu">
+        <li class="active"><a href="index.html"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
+        <li><a href="index2.html"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
+    </ul>
+</li>
