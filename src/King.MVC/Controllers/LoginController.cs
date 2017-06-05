@@ -46,8 +46,8 @@ namespace King.MVC.Controllers
                     var claims = new List<Claim>() {
                         new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                         new Claim(ClaimTypes.Name,user.UserName),
-                        new Claim(ClaimTypes.Email,user.EMail),
-                        new Claim(ClaimTypes.MobilePhone,user.MobileNumber)
+                        new Claim(ClaimTypes.Email,user.EMail??""),
+                        new Claim(ClaimTypes.MobilePhone,user.MobileNumber??"")
                     };
                     var Identity = new ClaimsIdentity("Forms");
                     Identity.AddClaims(claims);
