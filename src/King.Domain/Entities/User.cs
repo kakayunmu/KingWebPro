@@ -64,6 +64,6 @@ namespace King.Domain.Entities
         /// <summary>
         /// 角色集合
         /// </summary>
-        public virtual ICollection<UserRole> UserRoles { get; set; }
+        public  ICollection<UserRole> UserRoles { get; set; }
     }
 }

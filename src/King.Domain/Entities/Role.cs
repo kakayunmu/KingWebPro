@@ -33,5 +33,9 @@ namespace King.Domain.Entities
         /// 角色拥有的菜单
         /// </summary>
         public virtual ICollection<RoleMenu> RoleMenus { get; set; }
+        /// <summary>
+        /// 角色拥有的用户
+        /// </summary>
+        public ICollection<UserRole> UserRoles { get; set; }
     }
 }

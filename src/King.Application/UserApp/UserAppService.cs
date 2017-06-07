@@ -50,12 +50,12 @@ namespace King.Application.UserApp
 
         public async Task<UserDto> Get(Guid id)
         {
-            return Mapper.Map<UserDto>(await _repository.Get(id));
+            return Mapper.Map<UserDto>(await _repository.GetWithRoles(id));
         }
 
         public async Task<PageData<UserDto>> GetUserByDepartment(Guid departmentId, int startPage, int pageSize)
         {
-            var list = await _repository.LoadPageList(startPage, pageSize, it => it.DepartmentId == departmentId, it => it.CreateTime);
+            var list = await _repository.LoadPageList(startPage, pageSize, it => it.DepartmentId == departmentId, it => it.CreateTime);           
             return new PageData<UserDto>()
             {
                 Total = list.Total,
@@ -63,9 +63,14 @@ namespace King.Application.UserApp
             };
         }
 
-        public Task<UserDto> InsertOrUpdate(UserDto dto)
+        public async Task<UserDto> InsertOrUpdate(UserDto dto)
         {
-            throw new NotImplementedException();
+            if (Get(dto.Id) != null)
+            {
+                await _repository.Delete(dto.Id);
+            }
+            var user = await _repository.InsertOrUpdate(Mapper.Map<User>(dto));
+            return Mapper.Map<UserDto>(user);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿@section styles{
-    <link href="~/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="~/lib/select2/dist/css/select2.css" rel="stylesheet" />
+    <link href="/Views/User/Index.css" rel="stylesheet" />
 }
 <div class="row">
     <div class="col-md-3">
@@ -38,6 +39,7 @@
         </div>
     </div>
 </div>
+@Html.Partial("_Edit")
 @section scripts{
     <script type="text/javascript" src="~/lib/select2/dist/js/select2.min.js"></script>
     <script src="~/Views/User/Index.js?ts=@DateTime.Now.Ticks"></script>

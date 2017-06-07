@@ -1,0 +1,63 @@
+﻿<div id="EditModal" tabindex="-1" class="modal fade in" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h5 class="box-title" id="Title">新增用户</h5>
+                <button class="close" aria-label="Close" type="button" data-dismiss="modal">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form class="form-horizontal" id="editForm">
+                <input type="hidden" id="Id" name="Id" />
+                <div class="box-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="UserName">用户名</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="UserName" name="UserName" type="text" placeholder="用户登录名称">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="Name">用户姓名</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="Name" name="Name" type="text" placeholder="用户姓名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="Email">Email</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="Email" name="Email" type="text" placeholder="电子邮箱">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="MobileNumber">电话</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="MobileNumber" name="MobileNumber" type="text" placeholder="电话">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="Remarks">描述</label>
+                        <div class="col-sm-10">
+                            <textarea id="Remarks" name="Remarks" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="Roles">角色</label>
+                        <div class="col-sm-10">
+                            <select id="Roles" name="Roles" class="form-control" multiple="multiple" style="width:100%;">
+                                <option>选项1</option>
+                                <option>选项2</option>
+                                <option>选项多少3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right box-tools">
+                        <button id="btnSave" class="btn btn-primary" type="button">保存</button>
+                        <button class="btn btn-default" type="button" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

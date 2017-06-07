@@ -87,6 +87,7 @@ function save() {
                 $("#EditModal").modal("hide");
                 layer.msg("数据保存成功");
                 loadTables();
+                $("#EditModal").modal("hide");
             } else {
                 layer.tips(data.message, "#btnSave");
             };
