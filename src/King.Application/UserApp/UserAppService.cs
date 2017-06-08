@@ -35,17 +35,22 @@ namespace King.Application.UserApp
         /// <returns></returns>
         public async Task<User> CheckUser(string userName, string password)
         {
-            return await _repository.CheckUser(userName, password);
+            return await _repository.CheckUser(userName, King.Utility.Security.Encryption.Md5WithSalt("KingWeb", password));
         }
 
         public async Task Delete(Guid id)
         {
-            await _repository.Delete(id);
+            var user = await _repository.Get(id);
+            user.IsDeleted = 1;
+            await _repository.InsertOrUpdate(user);
         }
 
         public async Task DeleteBatch(List<Guid> ids)
         {
-            await _repository.Delete(it => ids.Contains(it.Id));
+            foreach (var item in ids)
+            {
+                await Delete(item);
+            }
         }
 
         public async Task<UserDto> Get(Guid id)
@@ -55,7 +60,7 @@ namespace King.Application.UserApp
 
         public async Task<PageData<UserDto>> GetUserByDepartment(Guid departmentId, int startPage, int pageSize)
         {
-            var list = await _repository.LoadPageList(startPage, pageSize, it => it.DepartmentId == departmentId, it => it.CreateTime);           
+            var list = await _repository.LoadPageList(startPage, pageSize, it => it.DepartmentId == departmentId && it.IsDeleted == 0, it => it.CreateTime);
             return new PageData<UserDto>()
             {
                 Total = list.Total,
@@ -65,12 +70,23 @@ namespace King.Application.UserApp
 
         public async Task<UserDto> InsertOrUpdate(UserDto dto)
         {
-            if (Get(dto.Id) != null)
+            if (await Get(dto.Id) != null)
             {
                 await _repository.Delete(dto.Id);
             }
+            else
+            {
+                dto.Password = King.Utility.Security.Encryption.Md5WithSalt("KingWeb", "888888");
+            }
             var user = await _repository.InsertOrUpdate(Mapper.Map<User>(dto));
             return Mapper.Map<UserDto>(user);
+        }
+
+        public async Task ResetPwd(Guid userId, string pwd)
+        {
+            var user = await _repository.Get(userId);
+            user.Password = King.Utility.Security.Encryption.Md5WithSalt("KingWeb", pwd);
+            await _repository.InsertOrUpdate(user);
         }
     }
 }

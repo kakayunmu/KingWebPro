@@ -101,7 +101,14 @@ namespace King.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public virtual Task<List<TEntity>> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
-            return Task.FromResult(_dbContext.Set<TEntity>().Where(predicate).ToList());
+            if (predicate != null)
+            {
+                return Task.FromResult(_dbContext.Set<TEntity>().Where(predicate).ToList());
+            }
+            else
+            {
+                return GetAllList();
+            }
         }
 
         /// <summary>

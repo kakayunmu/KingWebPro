@@ -4,6 +4,9 @@ $(function () {
     $("#btnAdd").click(function () { add(); });
     $("#btnEdit").click(function () { edit(); });
     $("#btnSave").click(function () { save(); });
+    $("#btnDelete").click(function () { deleteMulti(); });
+    $("#btnUpdatePwd").click(function () { updatePwd(); });
+    $("#btnReset").click(function () { resetPwd(); });
     initTree();
 });
 function initTree() {
@@ -150,6 +153,52 @@ function edit() {
         }
     })
 }
+
+function deleteMulti() {
+    var ids = "";
+    var rows = $table.bootstrapTable("getSelections");
+    for (var i = 0; i < rows.length; i++) {
+        ids += rows[i].id + ",";
+    }
+    ids = ids.substring(0, ids.length - 1);
+    if (ids.length == 0) {
+        layer.alert("请选择要删除的记录。");
+        return;
+    };
+    //询问框
+    layer.confirm("您确认删除选定的记录吗？", {
+        btn: ["确定", "取消"]
+    }, function () {
+        var sendData = { "ids": ids };
+        $.ajax({
+            type: "Post",
+            url: "/User/DeleteMuti",
+            data: sendData,
+            success: function (data) {
+                if (data.result == "Success") {
+                    layer.msg("删除数据成功");
+                    loadTables();
+                }
+                else {
+                    layer.alert("删除失败！");
+                }
+            }
+        });
+    });
+};
+
+function updatePwd() {
+    var rows = $table.bootstrapTable("getSelections");
+    if (rows.length == 0) {
+        layer.alert("请选中需要重置密码的用户。");
+        return;
+    }
+    if (rows.length > 1) {
+        layer.msg("你选中的多行，默认取你选中的第一个用户。");
+    }
+    $("#Password").val("");
+    $("#ResetModal").modal("show");
+};
 function save() {
     var formData = $("#editForm").serializeArray();
     formData.push({ "name": "departmentId", "value": selectedDepartmentId });
@@ -168,6 +217,22 @@ function save() {
             };
         }
     });
+};
+
+function resetPwd() {
+    var rows = $table.bootstrapTable("getSelections");
+    $.post("/User/ResetPwd",
+        {
+            userId: rows[0].id,
+            password: $("#Password").val()
+        }, function (data) {
+            if (data.result == "Success") {
+                layer.msg("重置密码成功");
+            } else {
+                layer.msg("重置密码失败，请稍后重试。")
+            }
+            $("#ResetModal").modal("hide");
+        }, "JSON");
 };
 
 function roleSelectInit() {

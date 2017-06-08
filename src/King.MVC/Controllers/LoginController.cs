@@ -65,6 +65,11 @@ namespace King.MVC.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.Authentication.SignOutAsync("UserAuth");
+            return Json(new { result = "Success", message = "操作成功" });
+        }
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

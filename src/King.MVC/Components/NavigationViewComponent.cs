@@ -22,8 +22,8 @@ namespace King.MVC.Components
 
         public IViewComponentResult Invoke()
         {
-            var menus = _menuAppService.GetAllList();
-            return View(_menuAppService.ConvertL2T(menus.Result));
+            var menus = _menuAppService.GetAllList(it => it.Type == 0);
+            return View(_menuAppService.ConvertL2T(menus.Result,Request.Path));
         }
 
     }

@@ -7,6 +7,7 @@ using King.Domain.IRepositories;
 using AutoMapper;
 using System.Linq;
 using King.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace King.Application.MenuApp
 {
@@ -21,37 +22,13 @@ namespace King.Application.MenuApp
             _userRepository = userRepository;
         }
 
-        public Task<List<MenuTreeDto>> ConvertL2T(List<MenuDto> menus)
+        public Task<List<MenuTreeDto>> ConvertL2T(List<MenuDto> menus, string url = null)
         {
             var retLi = new List<MenuTreeDto>();
-            foreach (var item in menus)
+            foreach (var item in menus.FindAll(it => it.ParentId == Guid.Empty))
             {
-                if (menus.Find(m => m.Id == item.ParentId) == null)
-                {
-                    retLi.Add(new MenuTreeDto()
-                    {
-                        Id = item.Id,
-                        Code = item.Code,
-                        Icon = item.Icon,
-                        Name = item.Name,
-                        ParentId = item.ParentId,
-                        Remarks = item.Remarks,
-                        SerialNumber = item.SerialNumber,
-                        Type = item.Type,
-                        Url = item.Url,
-                        Childs = MenuRec(item.Id, menus)
-                    });
-                }
-            }
-            return Task.FromResult(retLi);
-        }
-
-        private List<MenuTreeDto> MenuRec(Guid pId, List<MenuDto> menus)
-        {
-            var childs = menus.FindAll(m => m.ParentId == pId);
-            List<MenuTreeDto> retLi = new List<MenuTreeDto>();
-            foreach (var item in childs)
-            {
+                bool ownActive = item.Url!=null && url.IndexOf(item.Url) != -1;
+                bool active = false;
                 retLi.Add(new MenuTreeDto()
                 {
                     Id = item.Id,
@@ -63,9 +40,39 @@ namespace King.Application.MenuApp
                     SerialNumber = item.SerialNumber,
                     Type = item.Type,
                     Url = item.Url,
-                    Childs = MenuRec(item.Id, menus)
+                    Childs = MenuRec(item.Id, menus, url, out active),
+                    Active = ownActive ? ownActive : active
                 });
             }
+            return Task.FromResult(retLi);
+        }
+
+        private List<MenuTreeDto> MenuRec(Guid pId, List<MenuDto> menus, string url, out bool active)
+        {
+            var childs = menus.FindAll(m => m.ParentId == pId);
+            List<MenuTreeDto> retLi = new List<MenuTreeDto>();
+            bool childsActiv = false;
+            foreach (var item in childs)
+            {
+                bool ownActive = item.Url !=null && url.IndexOf(item.Url) != -1;
+                if (ownActive)
+                    childsActiv = ownActive;
+                retLi.Add(new MenuTreeDto()
+                {
+                    Id = item.Id,
+                    Code = item.Code,
+                    Icon = item.Icon,
+                    Name = item.Name,
+                    ParentId = item.ParentId,
+                    Remarks = item.Remarks,
+                    SerialNumber = item.SerialNumber,
+                    Type = item.Type,
+                    Url = item.Url,
+                    Childs = MenuRec(item.Id, menus, url, out active),
+                    Active = ownActive ? ownActive : active
+                });
+            }
+            active = childsActiv;
             return retLi;
         }
 
@@ -93,9 +100,9 @@ namespace King.Application.MenuApp
             return Mapper.Map<MenuDto>(await _menuRepository.Get(id));
         }
 
-        public async Task<List<MenuDto>> GetAllList()
+        public async Task<List<MenuDto>> GetAllList(Expression<Func<Menu, bool>> expression = null)
         {
-            var menus = await _menuRepository.GetAllList();
+            var menus = await _menuRepository.GetAllList(expression);
             return Mapper.Map<List<MenuDto>>(menus);
         }
 

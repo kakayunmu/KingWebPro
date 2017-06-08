@@ -29,6 +29,9 @@
                     <button id="btnDelete" title="" class="btn btn-danger btn-sm" type="button" data-original-title="删除功能" data-toggle="tooltip" data-widget="">
                         <i class="fa fa-times"></i>&nbsp;&nbsp;删除
                     </button>
+                    <button id="btnUpdatePwd" title="" class="btn btn-primary btn-sm" type="button" data-original-title="修改密码" data-toggle="tooltip" data-widget="">
+                        <i class="fa fa-pencil"></i>&nbsp;&nbsp;修改密码
+                    </button>
                 </div>
             </div>
             <div class="box-body">
@@ -40,6 +43,7 @@
     </div>
 </div>
 @Html.Partial("_Edit")
+@Html.Partial("_ResetPwd")
 @section scripts{
     <script type="text/javascript" src="~/lib/select2/dist/js/select2.min.js"></script>
     <script src="~/Views/User/Index.js?ts=@DateTime.Now.Ticks"></script>

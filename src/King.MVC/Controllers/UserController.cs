@@ -81,5 +81,37 @@ namespace King.MVC.Controllers
             return Json(await _userAppService.Get(id));
         }
 
+        public async Task<IActionResult> DeleteMuti(string ids)
+        {
+            try
+            {
+                var idsArray = ids.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var idsGuidList = new List<Guid>();
+                foreach (var item in idsArray)
+                {
+                    idsGuidList.Add(Guid.Parse(item));
+                }
+                await _userAppService.DeleteBatch(idsGuidList);
+                return Json(new { result = "Success", message = "删除数据成功" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = "Error", message = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> ResetPwd(Guid userId, string password)
+        {
+            try
+            {
+                await _userAppService.ResetPwd(userId, password);
+                return Json(new { result = "Success", message = "重置密码成功" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = "Error", message = ex.Message });
+            }
+        }
+
     }
 }

@@ -9,6 +9,8 @@
     <Content Include="wwwroot\css\googlefonts\fonts_googleapis_com.css" />
     <Content Include="wwwroot\js\jquery.slimscroll.js" />
     <Content Include="wwwroot\js\jquery.slimscroll.min.js" />
+    <Content Include="wwwroot\js\king.js" />
+    <Content Include="wwwroot\js\main.js" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0-msbuild3-final" />
