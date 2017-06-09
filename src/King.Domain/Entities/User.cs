@@ -60,10 +60,14 @@ namespace King.Domain.Entities
         /// <summary>
         /// 所属部门实体
         /// </summary>
-        public virtual Department Department { get; set; }
+        public Department Department { get; set; }
         /// <summary>
         /// 角色集合
         /// </summary>
-        public  ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; }
+        /// <summary>
+        /// 用户头像
+        /// </summary>
+        public string HeadImg { get; set; }
     }
 }

@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <Content Include="wwwroot\css\googlefonts\fonts_googleapis_com.css" />
+    <Content Include="wwwroot\img\Avatar3 - 副本.jpg" />
+    <Content Include="wwwroot\img\user9-.jpg" />
+    <Content Include="wwwroot\img\user9-560x560.jpg" />
     <Content Include="wwwroot\js\jquery.slimscroll.js" />
     <Content Include="wwwroot\js\jquery.slimscroll.min.js" />
     <Content Include="wwwroot\js\king.js" />

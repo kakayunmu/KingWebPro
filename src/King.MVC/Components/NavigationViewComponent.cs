@@ -20,10 +20,10 @@ namespace King.MVC.Components
             _userAppService = userAppService;
         }
 
-        public IViewComponentResult Invoke()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
-            var menus = _menuAppService.GetAllList(it => it.Type == 0);
-            return View(_menuAppService.ConvertL2T(menus.Result,Request.Path));
+            var menus = await _menuAppService.GetAllList(it => it.Type == 0);
+            return View(_menuAppService.ConvertL2T(menus, Request.Path));
         }
 
     }
