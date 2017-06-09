@@ -7,6 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using King.Application.UserApp;
 using Microsoft.Extensions.Logging;
+using King.Application.RoleApp;
+using King.Application.UserApp.Dtos;
+using King.Utility.Extended;
+using System.Security.Claims;
 
 namespace King.MVC.Controllers
 {
@@ -14,11 +18,13 @@ namespace King.MVC.Controllers
     public class UserController : Controller
     {
         private readonly IUserAppService _userAppService;
+        private readonly IRoleAppService _roleAppService;
         private readonly ILogger _logger;
 
-        public UserController(IUserAppService userAppService, ILogger<UserController> logger)
+        public UserController(IUserAppService userAppService, IRoleAppService roleAppService, ILogger<UserController> logger)
         {
             _userAppService = userAppService;
+            _roleAppService = roleAppService;
             _logger = logger;
         }
         public IActionResult Index()
@@ -33,5 +39,79 @@ namespace King.MVC.Controllers
             var result = await _userAppService.GetUserByDepartment(department, qparam.StartPage, qparam.PageSize);
             return Json(result);
         }
+
+
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _roleAppService.GetAllList();
+            return Json(roles.Select(it => new { it.Id, it.Name }));
+        }
+
+        public async Task<IActionResult> Edit(UserDto dto, string[] roles)
+        {
+            try
+            {
+                if (dto.Id == Guid.Empty)
+                {
+                    dto.Id = Guid.NewGuid();
+                }
+                var userRoles = new List<UserRoleDto>();
+                foreach (var role in roles)
+                {
+                    userRoles.Add(new UserRoleDto()
+                    {
+                        UserId = dto.Id,
+                        RoleId = Guid.Parse(role)
+                    });
+                }
+                dto.UserRoles = userRoles;
+                dto.CreateTime = DateTime.Now;
+                dto.CreateUserId = Guid.Parse(User.GetClaimVal(ClaimTypes.NameIdentifier));
+                var user = await _userAppService.InsertOrUpdate(dto);
+                return Json(new { Result = "Success", message = "保存数据成功" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "Error", message = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> Get(Guid id)
+        {
+            return Json(await _userAppService.Get(id));
+        }
+
+        public async Task<IActionResult> DeleteMuti(string ids)
+        {
+            try
+            {
+                var idsArray = ids.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var idsGuidList = new List<Guid>();
+                foreach (var item in idsArray)
+                {
+                    idsGuidList.Add(Guid.Parse(item));
+                }
+                await _userAppService.DeleteBatch(idsGuidList);
+                return Json(new { result = "Success", message = "删除数据成功" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = "Error", message = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> ResetPwd(Guid userId, string password)
+        {
+            try
+            {
+                await _userAppService.ResetPwd(userId, password);
+                return Json(new { result = "Success", message = "重置密码成功" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = "Error", message = ex.Message });
+            }
+        }
+
     }
 }

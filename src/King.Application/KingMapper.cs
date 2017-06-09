@@ -26,6 +26,8 @@ namespace King.Application
                 cfg.CreateMap<RoleMenuDto, RoleMenu>();
                 cfg.CreateMap<User, UserDto>();
                 cfg.CreateMap<UserDto, User>();
+                cfg.CreateMap<UserRole, UserRoleDto>();
+                cfg.CreateMap<UserRoleDto, UserRole>();
             });
         }
     }

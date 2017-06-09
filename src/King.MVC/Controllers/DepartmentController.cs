@@ -8,6 +8,8 @@ using King.Application.DepartmentApp;
 using King.MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using King.Application.DepartmentApp.Dtos;
+using King.Utility.Extended;
+using System.Security.Claims;
 
 namespace King.MVC.Controllers
 {
@@ -51,10 +53,8 @@ namespace King.MVC.Controllers
 
         public async Task<IActionResult> Edit(DepartmentDto department)
         {
-            var query = from u in User.Claims
-                        where u.Type == System.Security.Claims.ClaimTypes.NameIdentifier
-                        select u.Value;
-            department.CreateUserId = Guid.Parse(query.FirstOrDefault());
+
+            department.CreateUserId = Guid.Parse(User.GetClaimVal(ClaimTypes.NameIdentifier));
             department.CreateTime = DateTime.Now;
             if (await _departmentAppService.InsertOrUpdate(department) != null)
             {

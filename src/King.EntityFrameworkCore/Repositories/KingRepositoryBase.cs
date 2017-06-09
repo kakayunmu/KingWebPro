@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace King.EntityFrameworkCore.Repositories
 {
@@ -36,7 +37,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <param name="id">实体主键</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public async Task Delete(TPrimaryKey id, bool autoSave = true)
+        public virtual async Task Delete(TPrimaryKey id, bool autoSave = true)
         {
             _dbContext.Set<TEntity>().Remove(await Get(id));
             if (autoSave)
@@ -47,7 +48,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="where">lambda表达式</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public async Task Delete(Expression<Func<TEntity, bool>> where, bool autoSave = true)
+        public virtual async Task Delete(Expression<Func<TEntity, bool>> where, bool autoSave = true)
         {
             _dbContext.Set<TEntity>().Where(where).ToList().ForEach(it => _dbContext.Set<TEntity>().Remove(it));
             if (autoSave)
@@ -58,7 +59,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="entity">要删除的实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public async Task Delete(TEntity entity, bool autoSave = true)
+        public virtual async Task Delete(TEntity entity, bool autoSave = true)
         {
             _dbContext.Set<TEntity>().Remove(entity);
             if (autoSave)
@@ -70,7 +71,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="predicate">lambda表达式条件</param>
         /// <returns></returns>
-        public Task<TEntity> FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<TEntity> FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
             return Task.FromResult(_dbContext.Set<TEntity>().FirstOrDefault(predicate));
         }
@@ -79,7 +80,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <returns></returns>
-        public Task<TEntity> Get(TPrimaryKey id)
+        public virtual Task<TEntity> Get(TPrimaryKey id)
         {
             return Task.FromResult(_dbContext.Set<TEntity>().FirstOrDefault(CreateEqualityExpressionForId(id)));
         }
@@ -88,7 +89,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// 获取实体集合
         /// </summary>
         /// <returns></returns>
-        public Task<List<TEntity>> GetAllList()
+        public virtual Task<List<TEntity>> GetAllList()
         {
             return Task.FromResult(_dbContext.Set<TEntity>().ToList());
         }
@@ -98,9 +99,16 @@ namespace King.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="predicate">lambda表达式条件</param>
         /// <returns></returns>
-        public Task<List<TEntity>> GetAllList(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<List<TEntity>> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
-            return Task.FromResult(_dbContext.Set<TEntity>().Where(predicate).ToList());
+            if (predicate != null)
+            {
+                return Task.FromResult(_dbContext.Set<TEntity>().Where(predicate).ToList());
+            }
+            else
+            {
+                return GetAllList();
+            }
         }
 
         /// <summary>
@@ -109,7 +117,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public async Task<TEntity> Insert(TEntity entity, bool autoSave = true)
+        public virtual async Task<TEntity> Insert(TEntity entity, bool autoSave = true)
         {
             _dbContext.Set<TEntity>().Add(entity);
             if (autoSave)
@@ -122,7 +130,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public async Task<TEntity> InsertOrUpdate(TEntity entity, bool autoSave = true)
+        public virtual async Task<TEntity> InsertOrUpdate(TEntity entity, bool autoSave = true)
         {
             var retEnt = await Get(entity.Id);
             if (retEnt != null)
@@ -138,7 +146,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <param name="where">条件</param>
         /// <param name="order">排序</param>
         /// <returns></returns>
-        public Task<PageData<TEntity>> LoadPageList(int startPage, int pageSize, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order)
+        public virtual Task<PageData<TEntity>> LoadPageList(int startPage, int pageSize, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order)
         {
             var result = from p in _dbContext.Set<TEntity>()
                          select p;
@@ -147,7 +155,7 @@ namespace King.EntityFrameworkCore.Repositories
             if (order != null)
                 result = result.OrderBy(order);
             else
-                result = result.OrderBy(m => m.Id);
+                result = result.OrderBy(m => m.Id);            
             return Task.FromResult(new PageData<TEntity>
             {
                 Rows = result.Skip((startPage - 1) * pageSize).Take(pageSize),
@@ -157,7 +165,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <summary>
         /// 事务性保存
         /// </summary>
-        public async Task Save()
+        public virtual async Task Save()
         {
             await _dbContext.SaveChangesAsync();
         }
@@ -167,7 +175,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public async Task<TEntity> Update(TEntity entity, bool autoSave = true)
+        public virtual async Task<TEntity> Update(TEntity entity, bool autoSave = true)
         {
             var obj = await Get(entity.Id);
             await EntityToEntity(entity, obj);

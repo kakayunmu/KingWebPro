@@ -58,7 +58,10 @@ namespace King.Application.UserApp.Dtos
         /// 是否已删除
         /// </summary>
         public int IsDeleted { get; set; }
-
+        /// <summary>
+        /// 用户头像
+        /// </summary>
+        public string HeadImg { get; set; }
         /// <summary>
         /// 角色集合
         /// </summary>

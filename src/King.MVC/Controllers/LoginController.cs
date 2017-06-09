@@ -46,8 +46,8 @@ namespace King.MVC.Controllers
                     var claims = new List<Claim>() {
                         new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                         new Claim(ClaimTypes.Name,user.UserName),
-                        new Claim(ClaimTypes.Email,user.EMail),
-                        new Claim(ClaimTypes.MobilePhone,user.MobileNumber)
+                        new Claim(ClaimTypes.Email,user.EMail??""),
+                        new Claim(ClaimTypes.MobilePhone,user.MobileNumber??"")
                     };
                     var Identity = new ClaimsIdentity("Forms");
                     Identity.AddClaims(claims);
@@ -65,6 +65,11 @@ namespace King.MVC.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.Authentication.SignOutAsync("UserAuth");
+            return Json(new { result = "Success", message = "操作成功" });
+        }
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

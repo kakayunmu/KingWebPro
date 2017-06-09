@@ -5,6 +5,8 @@ using King.Domain.Entities;
 using King.Domain.IRepositories;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace King.EntityFrameworkCore.Repositories
 {
@@ -32,11 +34,7 @@ namespace King.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public Task<User> GetWithRoles(Guid id)
         {
-            var user = _dbContext.Set<User>().FirstOrDefault(it => it.Id == id);
-            if (user != null)
-            {
-                user.UserRoles = _dbContext.Set<UserRole>().Where(it => it.RoleId == user.Id).ToList();
-            }
+            var user = _dbContext.Users.Include(u => u.UserRoles).FirstOrDefault(it => it.Id == id);
             return Task.FromResult<User>(user);
         }
     }

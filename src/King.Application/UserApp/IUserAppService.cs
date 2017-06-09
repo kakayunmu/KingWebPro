@@ -49,6 +49,13 @@ namespace King.Application.UserApp
         /// <param name="id"></param>
         /// <returns></returns>
         Task<UserDto> Get(Guid id);
+        /// <summary>
+        /// 重置密码
+        /// </summary>
+        /// <param name="id">用户ID</param>
+        /// <param name="password">新密码</param>
+        /// <returns></returns>
+        Task ResetPwd(Guid id, string password);
 
     }
 }

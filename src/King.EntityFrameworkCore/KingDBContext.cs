@@ -21,7 +21,20 @@ namespace King.EntityFrameworkCore
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
             builder.Entity<RoleMenu>()
                 .HasKey(rm => new { rm.RoleId, rm.MenuId });
+
+            //builder.Entity<UserRole>()
+            //   .HasOne(ur => ur.User)
+            //   .WithMany(u => u.UserRoles)
+            //   .HasForeignKey(ur => ur.UserId);
+            //builder.Entity<UserRole>()
+            //    .HasOne(ur => ur.Role)
+            //    .WithMany(r => r.UserRoles)
+            //    .HasForeignKey(ur => ur.RoleId);
+
             base.OnModelCreating(builder);
+
+
+
         }
     }
 }

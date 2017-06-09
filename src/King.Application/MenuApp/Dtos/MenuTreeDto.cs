@@ -9,6 +9,7 @@ namespace King.Application.MenuApp.Dtos
     /// </summary>
     public class MenuTreeDto : MenuDto
     {
+        public bool Active { get; set; }
         public List<MenuTreeDto> Childs { get; set; }
     }
 }

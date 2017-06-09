@@ -1,0 +1,17 @@
+﻿.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    color: #222;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 1px solid #3C8DBC;
+    border-radius: 0px;
+}
+
+.select2-container--default .select2-selection--multiple {
+    border-radius: 0px;
+    border: 1px solid #ccc;
+}
+
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+        border-radius: 0px;
+    }

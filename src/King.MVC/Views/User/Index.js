@@ -1,8 +1,14 @@
 ﻿var selectedDepartmentId = "00000000-0000-0000-0000-000000000000";
 $(function () {
+    $("#Roles").select2();
+    $("#btnAdd").click(function () { add(); });
+    $("#btnEdit").click(function () { edit(); });
+    $("#btnSave").click(function () { save(); });
+    $("#btnDelete").click(function () { deleteMulti(); });
+    $("#btnUpdatePwd").click(function () { updatePwd(); });
+    $("#btnReset").click(function () { resetPwd(); });
     initTree();
 });
-
 function initTree() {
     $.jstree.destroy();
     $.ajax({
@@ -81,7 +87,7 @@ var TableInit = function () {
                 field: "name",
                 title: "姓名"
             }, {
-                field: "email",
+                field: "eMail",
                 title: "Email"
             }, {
                 field: "mobileNumber",
@@ -93,10 +99,148 @@ var TableInit = function () {
                     return moment(value).format("YYYY-MM-DD HH:mm:ss ");
                 }
             }, {
-                field: "reamrks",
+                field: "remarks",
                 title: "备注"
             }]
         });
     };
     return oTableInit;
+};
+
+function add() {
+    if (selectedDepartmentId == "00000000-0000-0000-0000-000000000000") {
+        layer.alert("请选选择部门");
+        return;
+    }
+    roleSelectInit();
+    //弹出新增窗体
+    $("#EditModal").modal("show");
+    $("#Id").val("00000000-0000-0000-0000-000000000000");
+    $("#UserName").val("");
+    $("#Name").val("");
+    $("#Email").val("");
+    $("#MobileNumber").val("");
+    $("#Remarks").val("");
+};
+function edit() {
+    var rows = $table.bootstrapTable("getSelections");
+    if (rows.length == 0) {
+        layer.alert("请选中需要编辑的数据。");
+        return;
+    }
+    if (rows.length > 1) {
+        layer.msg("你选中的多行，默认取你选中的第一行进行编辑。");
+    }
+    roleSelectInit();
+    $.ajax({
+        type: "Post",
+        url: "/User/Get",
+        data: { id: rows[0].id },
+        success: function (data) {
+            $("#Id").val(data.id);
+            $("#UserName").val(data.userName);
+            $("#Name").val(data.name);
+            $("#Email").val(data.eMail);
+            $("#MobileNumber").val(data.mobileNumber);
+            $("#Remarks").val(data.remarks);
+            var selectRoles = [];
+            $.each(data.userRoles, function () {
+                selectRoles.push(this.roleId);
+            });
+            $("#Roles").select2().val(selectRoles).trigger("change");
+            $("#Title").text("编辑用户")
+            $("#EditModal").modal("show");
+        }
+    })
+}
+
+function deleteMulti() {
+    var ids = "";
+    var rows = $table.bootstrapTable("getSelections");
+    for (var i = 0; i < rows.length; i++) {
+        ids += rows[i].id + ",";
+    }
+    ids = ids.substring(0, ids.length - 1);
+    if (ids.length == 0) {
+        layer.alert("请选择要删除的记录。");
+        return;
+    };
+    //询问框
+    layer.confirm("您确认删除选定的记录吗？", {
+        btn: ["确定", "取消"]
+    }, function () {
+        var sendData = { "ids": ids };
+        $.ajax({
+            type: "Post",
+            url: "/User/DeleteMuti",
+            data: sendData,
+            success: function (data) {
+                if (data.result == "Success") {
+                    layer.msg("删除数据成功");
+                    loadTables();
+                }
+                else {
+                    layer.alert("删除失败！");
+                }
+            }
+        });
+    });
+};
+
+function updatePwd() {
+    var rows = $table.bootstrapTable("getSelections");
+    if (rows.length == 0) {
+        layer.alert("请选中需要重置密码的用户。");
+        return;
+    }
+    if (rows.length > 1) {
+        layer.msg("你选中的多行，默认取你选中的第一个用户。");
+    }
+    $("#Password").val("");
+    $("#ResetModal").modal("show");
+};
+function save() {
+    var formData = $("#editForm").serializeArray();
+    formData.push({ "name": "departmentId", "value": selectedDepartmentId });
+    $.ajax({
+        type: "Post",
+        url: "/User/Edit",
+        data: formData,
+        success: function (data) {
+            if (data.result == "Success") {
+                $("#addRootModal").modal("hide");
+                loadTables();
+                layer.msg("保存数据成功");
+                $("#EditModal").modal("hide");
+            } else {
+                layer.tips(data.message, "#btnSave");
+            };
+        }
+    });
+};
+
+function resetPwd() {
+    var rows = $table.bootstrapTable("getSelections");
+    $.post("/User/ResetPwd",
+        {
+            userId: rows[0].id,
+            password: $("#Password").val()
+        }, function (data) {
+            if (data.result == "Success") {
+                layer.msg("重置密码成功");
+            } else {
+                layer.msg("重置密码失败，请稍后重试。")
+            }
+            $("#ResetModal").modal("hide");
+        }, "JSON");
+};
+
+function roleSelectInit() {
+    $.post("/User/GetAllRoles", {}, function (data) {
+        $("#Roles option").remove();
+        $.each(data, function () {
+            $("#Roles").append(" <option value='" + this.id + "'>" + this.name + "</option>")
+        });
+
+    }, "JSON");
 };
