@@ -9,6 +9,7 @@ using King.Application.DepartmentApp.Dtos;
 using King.Application.RoleApp.Dtos;
 using King.Application.UserApp.Dtos;
 using King.Application.StaffApp.Dtos;
+using King.Application.FixedProductApp.Dtos;
 
 namespace King.Application
 {
@@ -32,6 +33,8 @@ namespace King.Application
                 cfg.CreateMap<UserRoleDto, UserRole>();
                 cfg.CreateMap<Staff, StaffDto>();
                 cfg.CreateMap<StaffDto, Staff>();
+                cfg.CreateMap<FixedProduct, FixedProductDto>();
+                cfg.CreateMap<FixedProductDto, FixedProduct>();
             });
         }
     }

@@ -17,6 +17,7 @@ namespace King.EntityFrameworkCore
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RoleMenu> RoleMenus { get; set; }
         public DbSet<Staff> Staffs { get; set; }
+        public DbSet<FixedProduct> FixedProducts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

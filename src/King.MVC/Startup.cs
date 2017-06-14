@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Formatters.Json;
 using King.Application.RoleApp;
 using King.Domain.IRepositories.WagesIRepositories;
 using King.Application.StaffApp;
+using King.Application.FixedProductApp;
 
 namespace King.MVC
 {
@@ -54,6 +55,8 @@ namespace King.MVC
             services.AddScoped<IRoleAppService, RoleAppService>();
             services.AddScoped<IStaffRepository, StaffRepository>();
             services.AddScoped<IStaffAppService, StaffAppService>();
+            services.AddScoped<IFixedProductRepository, FixedProductRepository>();
+            services.AddScoped<IFixedProductAppService, FixedProductAppService>();
 
 
         }

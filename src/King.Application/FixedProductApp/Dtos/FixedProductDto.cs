@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace King.Domain.WagesEnities
+namespace King.Application.FixedProductApp.Dtos
 {
-    /// <summary>
-    /// 固定存款产品
-    /// </summary>
-    public class FixedProduct:Entity
+    public class FixedProductDto
     {
+        /// <summary>
+        /// 产品ID
+        /// </summary>
+        public Guid Id { get; set; }
         /// <summary>
         /// 产品名称
         /// </summary>

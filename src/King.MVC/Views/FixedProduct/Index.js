@@ -5,15 +5,19 @@
     $("#btnEdit").click(function () { edit(); });
     loadTables();
 });
+
 function add() {
     $("#Id").val("00000000-0000-0000-0000-000000000000");
     $("#Name").val("");
-    $("#IDNumber").val("");
-    $("#MobileNumber").val("");
-    $("#Title").text("员工");
+    $("#TimeLimit").val("");
+    $("#AIRate").val("");
+    $("#TimeLimitUnit").val(0);
+    $("#DataState").val(0);
+    $("#Title").text("新增产品");
     //弹出新增窗体
     $("#addRootModal").modal("show");
-}
+};
+
 function edit() {
     var rows = $table.bootstrapTable("getSelections");
     if (rows.length == 0) {
@@ -23,15 +27,17 @@ function edit() {
     if (rows.length > 1) {
         layer.msg("你选中的多行，默认取你选中的第一行进行编辑。");
     }
-    var staff = rows[0];
-    $("#Id").val(staff.id);
-    $("#Name").val(staff.name);
-    $("#MobileNumber").val(staff.mobileNumber);
-    $("#IDNumber").val(staff.idNumber);
+    var fixedProduct = rows[0];
+    $("#Id").val(fixedProduct.id);
+    $("#Name").val(fixedProduct.name);
+    $("#TimeLimit").val(fixedProduct.timeLimit);
+    $("#AIRate").val(fixedProduct.aiRate);
+    $("#TimeLimitUnit").val(fixedProduct.timeLimitUnit);
+    $("#DataState").val(fixedProduct.dataState);
 
     $("#Title").text("编辑员工")
     $("#addRootModal").modal("show");
-}
+};
 function deleteMulti() {
     var ids = "";
     var rows = $table.bootstrapTable("getSelections");
@@ -50,7 +56,7 @@ function deleteMulti() {
         var sendData = { "ids": ids };
         $.ajax({
             type: "Post",
-            url: "/Staff/DeleteMuti",
+            url: "/FixedProduct/DeleteMuti",
             data: sendData,
             success: function (data) {
                 if (data.result == "Success") {
@@ -67,7 +73,7 @@ function deleteMulti() {
 function save() {
     $.ajax({
         type: "Post",
-        url: "/Staff/Edit",
+        url: "/FixedProduct/Edit",
         data: $("#editForm").serialize(),
         success: function (data) {
             if (data.result == "Success") {
@@ -79,6 +85,7 @@ function save() {
         }
     });
 };
+
 var $table = $('#tb_data');
 var oTable;
 //加载功能列表数据
@@ -103,7 +110,7 @@ var TableInit = function () {
     };
     oTableInit.Init = function () {
         $table.bootstrapTable({
-            url: "/Staff/GetStaff",
+            url: "/FixedProduct/GetFP",
             method: "post",
             striped: true,
             pagination: true,
@@ -117,25 +124,32 @@ var TableInit = function () {
                 checkbox: true
             }, {
                 field: 'name',
-                title: '姓名'
+                title: '产品名称'
             }, {
-                field: "idNumber",
-                title: "身份证"
+                field: "timeLimit",
+                title: "期限",
+                formatter: function (value, row, index) {
+                    if (row.timeLimitUnit == 0) {
+                        return value + "天";
+                    } else {
+                        return value + "个月";
+                    }
+                }
             }, {
-                field: "mobileNumber",
-                title: "手机号"
-            }, {
-                field: "currentAmount",
-                title: "活期账号金额"
-            }, {
-                field: "fixedAmount",
-                title: "固定存款",
-                align: "right"
-            }, {
-                field: "createTime",
-                title: "创建时间",
+                field: "aiRate",
+                title: "年化利率",
                 formatter: function (value) {
-                    return moment(value).format("YYYY-MM-DD HH:mm:ss ");
+                    return value + "%";
+                }
+            }, {
+                field: "dataState",
+                title: "状态",
+                formatter: function (value) {
+                    if (value == 0) {
+                        return "正常";
+                    } else {
+                        return "已下架";
+                    }
                 }
             }]
         });
