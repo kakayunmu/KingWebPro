@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using AutoMapper;
 using King.Domain.Entities;
+using King.Domain.WagesEnities;
 using King.Application.MenuApp.Dtos;
 using King.Application.DepartmentApp.Dtos;
 using King.Application.RoleApp.Dtos;
 using King.Application.UserApp.Dtos;
+using King.Application.StaffApp.Dtos;
 
 namespace King.Application
 {
@@ -28,6 +30,8 @@ namespace King.Application
                 cfg.CreateMap<UserDto, User>();
                 cfg.CreateMap<UserRole, UserRoleDto>();
                 cfg.CreateMap<UserRoleDto, UserRole>();
+                cfg.CreateMap<Staff, StaffDto>();
+                cfg.CreateMap<StaffDto, Staff>();
             });
         }
     }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using King.Domain.Entities;
+using King.Domain.WagesEnities;
+
 namespace King.EntityFrameworkCore
 {
     public class KingDBContext : DbContext
@@ -14,6 +16,7 @@ namespace King.EntityFrameworkCore
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RoleMenu> RoleMenus { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -21,15 +24,6 @@ namespace King.EntityFrameworkCore
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
             builder.Entity<RoleMenu>()
                 .HasKey(rm => new { rm.RoleId, rm.MenuId });
-
-            //builder.Entity<UserRole>()
-            //   .HasOne(ur => ur.User)
-            //   .WithMany(u => u.UserRoles)
-            //   .HasForeignKey(ur => ur.UserId);
-            //builder.Entity<UserRole>()
-            //    .HasOne(ur => ur.Role)
-            //    .WithMany(r => r.UserRoles)
-            //    .HasForeignKey(ur => ur.RoleId);
 
             base.OnModelCreating(builder);
 
