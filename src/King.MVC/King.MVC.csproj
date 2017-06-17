@@ -12,6 +12,7 @@
     <Content Include="wwwroot\js\jquery.slimscroll.min.js" />
     <Content Include="wwwroot\js\king.js" />
     <Content Include="wwwroot\js\main.js" />
+    <Content Include="wwwroot\template\wagesTemplate.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0-msbuild3-final" />

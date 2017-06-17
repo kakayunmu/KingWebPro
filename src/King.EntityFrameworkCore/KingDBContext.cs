@@ -18,6 +18,9 @@ namespace King.EntityFrameworkCore
         public DbSet<RoleMenu> RoleMenus { get; set; }
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<FixedProduct> FixedProducts { get; set; }
+        public DbSet<WagesTemplate> WagesTemplates { get; set; }
+        public DbSet<WagesImportRecord> WagesImportRecord { get; set; }
+        public DbSet<CurrentDeposit> CurrentDeposits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

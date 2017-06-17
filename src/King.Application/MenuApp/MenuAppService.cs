@@ -27,7 +27,7 @@ namespace King.Application.MenuApp
             var retLi = new List<MenuTreeDto>();
             foreach (var item in menus.FindAll(it => it.ParentId == Guid.Empty))
             {
-                bool ownActive = item.Url!=null && url.IndexOf(item.Url) != -1;
+                bool ownActive = item.Url!=null && url.ToLower().IndexOf(item.Url.ToLower()) != -1;
                 bool active = false;
                 retLi.Add(new MenuTreeDto()
                 {
@@ -54,7 +54,7 @@ namespace King.Application.MenuApp
             bool childsActiv = false;
             foreach (var item in childs)
             {
-                bool ownActive = item.Url !=null && url.IndexOf(item.Url) != -1;
+                bool ownActive = item.Url != null && url.ToLower().IndexOf(item.Url.ToLower()) != -1;
                 if (ownActive)
                     childsActiv = ownActive;
                 retLi.Add(new MenuTreeDto()

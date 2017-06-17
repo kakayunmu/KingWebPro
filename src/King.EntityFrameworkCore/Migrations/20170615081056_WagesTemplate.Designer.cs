@@ -8,9 +8,10 @@ using King.EntityFrameworkCore;
 namespace King.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(KingDBContext))]
-    partial class KingDBContextModelSnapshot : ModelSnapshot
+    [Migration("20170615081056_WagesTemplate")]
+    partial class WagesTemplate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -153,26 +154,6 @@ namespace King.EntityFrameworkCore.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("King.Domain.WagesEnities.CurrentDeposit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("Amount");
-
-                    b.Property<DateTime>("CreateTime");
-
-                    b.Property<int>("MType");
-
-                    b.Property<string>("Remarks");
-
-                    b.Property<Guid>("StaffId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CurrentDeposits");
-                });
-
             modelBuilder.Entity("King.Domain.WagesEnities.FixedProduct", b =>
                 {
                     b.Property<Guid>("Id")
@@ -226,22 +207,6 @@ namespace King.EntityFrameworkCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Staffs");
-                });
-
-            modelBuilder.Entity("King.Domain.WagesEnities.WagesImportRecord", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("CreateBy");
-
-                    b.Property<DateTime>("CreateTime");
-
-                    b.Property<string>("GrpupId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WagesImportRecord");
                 });
 
             modelBuilder.Entity("King.Domain.WagesEnities.WagesTemplate", b =>

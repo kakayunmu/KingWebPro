@@ -6,12 +6,17 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.0.2" />
+    <PackageReference Include="EPPlus.Core" Version="1.5.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\King.Domain\King.Domain.csproj" />
     <ProjectReference Include="..\King.EntityFrameworkCore\King.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\King.Utility\King.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="WagesTemplateApp\Dtos\" />
   </ItemGroup>
 
 </Project>

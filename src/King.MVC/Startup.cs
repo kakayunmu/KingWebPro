@@ -18,6 +18,7 @@ using King.Application.RoleApp;
 using King.Domain.IRepositories.WagesIRepositories;
 using King.Application.StaffApp;
 using King.Application.FixedProductApp;
+using King.Application.WagesTemplateApp;
 
 namespace King.MVC
 {
@@ -57,6 +58,8 @@ namespace King.MVC
             services.AddScoped<IStaffAppService, StaffAppService>();
             services.AddScoped<IFixedProductRepository, FixedProductRepository>();
             services.AddScoped<IFixedProductAppService, FixedProductAppService>();
+            services.AddScoped<IWagesTemplateRepository, WagesTemplateRepository>();
+            services.AddScoped<IWagesTemplateAppService, WagesTemplateAppService>();
 
 
         }

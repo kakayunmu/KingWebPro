@@ -1,0 +1,115 @@
+﻿@section styles{
+    <link href="/Views/WagesTemplate/Index.css" rel="stylesheet" />
+}
+<div class="box box-primary" id="importbox">
+    <div class="box-header with-border">
+        <h3 class="box-title">文件上传</h3>   
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        <div class="box-body">
+            <div class="form-group">
+                <label for="wagesFile">请选您要导入的Excel。 具体模板文件请 <a href="~/template/wagesTemplate.xlsx" target="_blank">点击下载</a></label>
+                <input type="file" id="wagesFile" name="wagesFile" />
+            </div>
+        </div>
+    </form>
+    <div class="box-footer">
+        <button type="button" id="uploadBtn" class="btn btn-primary pull-right">上传</button>
+    </div>
+</div>
+<div class="box box-warning" id="importviewbox">
+    <div class="box-header with-border">
+        <h3 class="box-title">上传数据预览</h3>
+    </div>
+    <div id="importViewArea">
+
+    </div>
+    <div class="box-footer">
+        <button type="button" id="apply" class="btn btn-warning pull-right">执行导入检查</button>
+    </div>
+</div>
+<div class="box box-success" id="comparebox">
+    <div class="box-header with-border">
+        <h3 class="box-title">匹配结果预览</h3>
+    </div>
+    <div id="compareViewArea">
+
+    </div>
+    <div class="box-footer">
+        <div class="help-block" id="importTip" style="display:inline-block">请仔细检查数据，确认无误后点击导入。</div>
+        <button type="button" id="importbtn" class="btn btn-success pull-right disabled">确定导入</button>
+    </div>
+</div>
+@section scripts{
+    <script type="text/x-dot-template" id="importTemplate">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        姓名
+                    </th>
+                    <th>
+                        身份证号
+                    </th>
+                    <th>
+                        手机号
+                    </th>
+                    <th>
+                        金额
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{~it:value:index}}
+                <tr>
+                    <td>{{=value.staffName}}</td>
+                    <td>{{=value.idNumber}}</td>
+                    <td>{{=value.mobileNumber}}</td>
+                    <td>{{=value.amount}}</td>
+                </tr>
+                {{~}}
+            </tbody>
+        </table>
+    </script>
+    <script type="text/x-dot-template" id="compareTemlplate">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        姓名
+                    </th>
+                    <th>
+                        身份证号
+                    </th>
+                    <th>
+                        手机号
+                    </th>
+                    <th>
+                        金额
+                    </th>
+                    <th>
+                        状态
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{~it:value:index}}
+                <tr>
+                    <td>{{=value.staffName}}</td>
+                    <td>{{=value.idNumber}}</td>
+                    <td>{{=value.mobileNumber}}</td>
+                    <td>{{=value.amount}}</td>
+                    {{? value.isMapping==1}}
+                    <td class="success">{{=value.message}}</td>
+                    {{?? value.isMapping==2}}
+                    <td class="warning">{{=value.message}}</td>
+                    {{??}}
+                    <td class="danger">{{=value.message}}</td>
+                    {{?}}
+                </tr>
+                {{~}}
+            </tbody>
+        </table>
+    </script>
+    <script type="text/javascript" src="~/Views/WagesTemplate/Index.js?ts=@DateTime.Now.Ticks"></script>
+}

@@ -8,9 +8,10 @@ using King.EntityFrameworkCore;
 namespace King.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(KingDBContext))]
-    partial class KingDBContextModelSnapshot : ModelSnapshot
+    [Migration("20170617134340_wagesImportRecord")]
+    partial class wagesImportRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -151,26 +152,6 @@ namespace King.EntityFrameworkCore.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
-                });
-
-            modelBuilder.Entity("King.Domain.WagesEnities.CurrentDeposit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("Amount");
-
-                    b.Property<DateTime>("CreateTime");
-
-                    b.Property<int>("MType");
-
-                    b.Property<string>("Remarks");
-
-                    b.Property<Guid>("StaffId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CurrentDeposits");
                 });
 
             modelBuilder.Entity("King.Domain.WagesEnities.FixedProduct", b =>
