@@ -41,6 +41,8 @@ namespace King.MVC
         {
             services.AddDbContext<KingDBContext>(options =>
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
+            //使用缓存
+            services.AddMemoryCache();
             //添加MVC支持
             services.AddMvc();
             //增加session服务
@@ -60,7 +62,7 @@ namespace King.MVC
             services.AddScoped<IFixedProductAppService, FixedProductAppService>();
             services.AddScoped<IWagesTemplateRepository, WagesTemplateRepository>();
             services.AddScoped<IWagesTemplateAppService, WagesTemplateAppService>();
-
+           
 
         }
 
@@ -75,7 +77,7 @@ namespace King.MVC
             }
             else
             {
-                app.UseExceptionHandler("/Shared/Error");
+                app.UseExceptionHandler("/Shared/Error");             
             }
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
@@ -95,6 +97,9 @@ namespace King.MVC
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Login}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    name: "API",                    
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
             });
             //初始化映射关系
             King.Application.KingMapper.Initialize();

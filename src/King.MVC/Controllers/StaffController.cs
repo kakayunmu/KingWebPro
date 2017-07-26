@@ -42,7 +42,7 @@ namespace King.MVC.Controllers
                 if (dto.Id == Guid.Empty)
                 {
                     dto.CreateTime = DateTime.Now;
-                    dto.Password = King.Utility.Security.Encryption.Md5WithSalt("KingWeb", "123456");
+                    dto.Password = Utility.Security.Encryption.Md5WithSalt("KingWeb", "123456");
                     dto.HeadImg = "img/user3-160x160.jpg";
                     dto.CurrentAmount = 0;
                     dto.FixedAmount = 0;

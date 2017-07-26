@@ -51,6 +51,11 @@ namespace King.Domain.WagesEnities
         /// 删除标识 0 正常 1已删除
         /// </summary>
         public int IsDel { get; set; }
+        /// <summary>
+        /// 刷新token
+        /// </summary>
+        [StringLength(maximumLength: 36)]
+        public string RefToken { get; set; }
 
     }
 }
