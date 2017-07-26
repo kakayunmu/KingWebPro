@@ -1,0 +1,32 @@
+﻿@model Setting
+<div class="box box-primary" id="importbox">
+    <div class="box-header with-border">
+        <h3 class="box-title">参数设置</h3>
+    </div>
+    <form method="post" id="settingForm">
+        <input type="hidden" name="Id" asp-for="Id" />
+        <div class="box-body">
+            <div class="form-group">
+                员工取款金额达到 <input type="text" asp-for="MaxWithdrawals" asp-format="{0:0.00}" class="form-control"  style="width:100px;display:inline-block" /> 元，需要审核后才能提现。<span style="color:#ccc;">（注：如果填 0 则不限制）</span>
+            </div>
+            <div class="form-group">
+                活期存款每日年化利率为 <input type="text" asp-for="GeneralInterestRate" asp-format="{0:0.00}" class="form-control"  style="width:100px;display:inline-block" /> %
+            </div>
+            <div class="form-group">
+                每日个人累计提现金额满 <input type="text" asp-for="MaxPersonalAmount" asp-format="{0:0.00}" class="form-control"  style="width:100px;display:inline-block" /> 元后,提现都需要审核通过后到账。<span style="color:#ccc;">（注：如果填 0 则不限制）</span>
+            </div>
+            <div class="form-group">
+                每日公司累计提现金额满 <input type="text" asp-for="MaxAllAmount" asp-format="{0:0.00}" class="form-control" style="width:100px;display:inline-block" /> 元后,提现都需要审核通过后到账。<span style="color:#ccc;">（注：如果填 0 则不限制）</span>
+            </div>
+            <div class="form-group">
+                当支付宝商户金额降至 <input type="text" asp-for="PoolAmountRemind" asp-format="{0:0.00}" class="form-control"  style="width:100px;display:inline-block" /> 元后,发送短信预警通知。通知手机号 <input type="tel" asp-for="RemindMobiles" class="form-control" style="width:200px;display:inline-block;" /><span style="color:#ccc;">（注：最多填写2个手机号，用英文逗号分隔）</span>
+            </div>
+        </div>
+    </form>
+    <div class="box-footer">
+        <button type="button" id="saveBtn" class="btn btn-primary pull-right">保存</button>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Views/Setting/Index.js?ts=@DateTime.Now.Ticks"></script>
+}

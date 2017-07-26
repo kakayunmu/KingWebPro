@@ -21,6 +21,7 @@ namespace King.EntityFrameworkCore
         public DbSet<WagesTemplate> WagesTemplates { get; set; }
         public DbSet<WagesImportRecord> WagesImportRecord { get; set; }
         public DbSet<CurrentDeposit> CurrentDeposits { get; set; }
+        public DbSet<Setting> Settings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,7 +29,6 @@ namespace King.EntityFrameworkCore
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
             builder.Entity<RoleMenu>()
                 .HasKey(rm => new { rm.RoleId, rm.MenuId });
-
             base.OnModelCreating(builder);
 
 
