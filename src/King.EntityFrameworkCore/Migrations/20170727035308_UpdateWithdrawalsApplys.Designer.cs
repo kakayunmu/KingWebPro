@@ -8,9 +8,10 @@ using King.EntityFrameworkCore;
 namespace King.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(KingDBContext))]
-    partial class KingDBContextModelSnapshot : ModelSnapshot
+    [Migration("20170727035308_UpdateWithdrawalsApplys")]
+    partial class UpdateWithdrawalsApplys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");

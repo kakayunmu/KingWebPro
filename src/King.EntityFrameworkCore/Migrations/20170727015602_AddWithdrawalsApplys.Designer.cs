@@ -8,9 +8,10 @@ using King.EntityFrameworkCore;
 namespace King.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(KingDBContext))]
-    partial class KingDBContextModelSnapshot : ModelSnapshot
+    [Migration("20170727015602_AddWithdrawalsApplys")]
+    partial class AddWithdrawalsApplys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -308,7 +309,7 @@ namespace King.EntityFrameworkCore.Migrations
 
                     b.Property<DateTime>("AuditorTime");
 
-                    b.Property<Guid>("StaffId");
+                    b.Property<string>("StaffId");
 
                     b.HasKey("Id");
 

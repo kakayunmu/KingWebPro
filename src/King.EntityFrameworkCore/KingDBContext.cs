@@ -22,6 +22,7 @@ namespace King.EntityFrameworkCore
         public DbSet<WagesImportRecord> WagesImportRecord { get; set; }
         public DbSet<CurrentDeposit> CurrentDeposits { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<WithdrawalsApply> WithdrawalsApplys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
