@@ -18,7 +18,7 @@ namespace King.Domain.WagesEnities
         /// </summary>
         public decimal Amount { get; set; }
         /// <summary>
-        /// 类型  1工资、2充值、3消费、4提现、5转出
+        /// 类型  1工资、2充值、3消费、4提现、5转出 6、利息收入
         /// </summary>
         public int MType { get; set; }
         /// <summary>
@@ -29,5 +29,9 @@ namespace King.Domain.WagesEnities
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 其他数据对象
+        /// </summary>
+        public string JsonObj { get; set; }
     }
 }

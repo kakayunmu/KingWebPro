@@ -52,6 +52,7 @@
     <Folder Include="Areas\API\Models\" />
     <Folder Include="Areas\API\Views\" />
     <Folder Include="wwwroot\css\googlefonts\fonts\" />
+    <Folder Include="wwwroot\headImg\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />
