@@ -19,6 +19,8 @@ using King.Domain.IRepositories.WagesIRepositories;
 using King.Application.StaffApp;
 using King.Application.FixedProductApp;
 using King.Application.WagesTemplateApp;
+using NLog.Web;
+using NLog.Extensions.Logging;
 
 namespace King.MVC
 {
@@ -34,6 +36,7 @@ namespace King.MVC
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+            env.ConfigureNLog("nlog.config");
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -62,7 +65,7 @@ namespace King.MVC
             services.AddScoped<IFixedProductAppService, FixedProductAppService>();
             services.AddScoped<IWagesTemplateRepository, WagesTemplateRepository>();
             services.AddScoped<IWagesTemplateAppService, WagesTemplateAppService>();
-           
+
 
         }
 
@@ -71,13 +74,15 @@ namespace King.MVC
         {
             loggerFactory.AddConsole()
                 .AddDebug();
+            loggerFactory.AddNLog();
+            app.AddNLogWeb();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Shared/Error");             
+                app.UseExceptionHandler("/Shared/Error");
             }
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
@@ -98,7 +103,7 @@ namespace King.MVC
                     name: "default",
                     template: "{controller=Login}/{action=Index}/{id?}");
                 routes.MapRoute(
-                    name: "API",                    
+                    name: "API",
                     template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
             });
             //初始化映射关系

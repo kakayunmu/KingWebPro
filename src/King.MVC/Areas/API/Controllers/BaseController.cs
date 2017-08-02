@@ -21,7 +21,7 @@ namespace King.MVC.Areas.API.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var action = context.RouteData.Values["Action"].ToString().ToLower();
-            string[] noVActions = { "loginwithvcode", "login", "refaccesstoken", "sendloginvcode" };
+            string[] noVActions = { "loginwithvcode", "login", "refaccesstoken", "sendloginvcode", "findpwd" };
             if (!noVActions.Contains(action))
             {
                 Microsoft.Extensions.Primitives.StringValues act;

@@ -103,38 +103,68 @@ namespace King.MVC.Areas.API.Controllers
                 }
                 else
                 {
-                    int rcode = new Random().Next(1000, 9999);
-                    Dictionary<string, string> smsParame = new Dictionary<string, string>();
-                    smsParame.Add("smscode", rcode.ToString());
-                    RequestParame rp = new RequestParame()
-                    {
-                        Mobile = mobile,
-                        SMSParam = smsParame,
-                        Config = new ALYSMSConfig()
-                        {
-                            AccessId = "LTAIQ0WptV3WGYUC",
-                            AccessKey = "XFVIKRAYc7hIsxeebioEXl2QQwpTay",
-                            RegionEndpoint = "http://1227674209450822.mns.cn-hangzhou-internal.aliyuncs.com/",
-                            TopicName = "sms.topic-cn-hangzhou",
-                            SignName = "新航向",
-                            TemplateCode = "SMS_48690112"
-                        }
-                    };
-                    HttpWebResponse response = await King.Utility.HttpUtil.HttpWebHelper.PostWithJson("http://zyrtest.lzfjf.com/MNS/api/SMS/PostSendSMS", rp) as HttpWebResponse;
+                    //int rcode = new Random().Next(1000, 9999);
+                    //Dictionary<string, string> smsParame = new Dictionary<string, string>();
+                    //smsParame.Add("smscode", rcode.ToString());
+                    //RequestParame rp = new RequestParame()
+                    //{
+                    //    Mobile = mobile,
+                    //    SMSParam = smsParame,
+                    //    Config = new ALYSMSConfig()
+                    //    {
+                    //        AccessId = "LTAIQ0WptV3WGYUC",
+                    //        AccessKey = "XFVIKRAYc7hIsxeebioEXl2QQwpTay",
+                    //        RegionEndpoint = "http://1227674209450822.mns.cn-hangzhou-internal.aliyuncs.com/",
+                    //        TopicName = "sms.topic-cn-hangzhou",
+                    //        SignName = "员工平台",
+                    //        TemplateCode = "SMS_48690112"
+                    //    }
+                    //};
+                    //HttpWebResponse response = await King.Utility.HttpUtil.HttpWebHelper.PostWithJson("http://zyrtest.lzfjf.com/MNS/api/SMS/PostSendSMS", rp) as HttpWebResponse;
 
-                    string retString = "";
-                    using (Stream stream = response.GetResponseStream())
-                    {
-                        StreamReader sr = new StreamReader(stream);
-                        retString = sr.ReadToEnd();
-                    }
-                    var ret = Newtonsoft.Json.JsonConvert.DeserializeObject<RetClass>(retString);
-                    if (ret.Status == 0)
-                    {
-                        memoryCache.Set<MobileVCode>(mobile, new MobileVCode() { mobile = mobile, vcode = rcode.ToString() }, new TimeSpan(0, 1, 0));
-                    }
+                    //string retString = "";
+                    //using (Stream stream = response.GetResponseStream())
+                    //{
+                    //    StreamReader sr = new StreamReader(stream);
+                    //    retString = sr.ReadToEnd();
+                    //}
+                    //var ret = Newtonsoft.Json.JsonConvert.DeserializeObject<RetClass>(retString);
+                    //if (ret.Status == 0)
+                    //{
+                    //    memoryCache.Set<MobileVCode>(mobile, new MobileVCode() { mobile = mobile, vcode = rcode.ToString() }, new TimeSpan(0, 1, 0));
+                    //}
+
+                    #region 测试代码
+                    int rcode = 1234;
+                    memoryCache.Set<MobileVCode>(mobile, new MobileVCode() { mobile = mobile, vcode = rcode.ToString() }, new TimeSpan(0, 1, 0));
+                    var ret = new { Status = 0, Msg = "验证码发送成功" };
+                    #endregion
                     return Json(new { status = ret.Status, msg = ret.Msg });
                 }
+            }
+        }
+        [HttpPost]
+        public IActionResult FindPwd(string mobile, string vCode, string newPwd)
+        {
+            var mobileVCode = memoryCache.Get<MobileVCode>(mobile);
+            if (mobileVCode != null && mobileVCode.vcode == vCode)
+            {
+                var staff = content.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
+                if (staff != null)
+                {
+                    staff.Password = Utility.Security.Encryption.Md5WithSalt("KingWeb", newPwd);
+                    content.Staffs.Update(staff);
+                    content.SaveChanges();
+                    return Json(new { status = 0, msg = "找回密码成功" });
+                }
+                else
+                {
+                    return Json(new { status = -1, msg = "手机号尚未注册" });
+                }
+            }
+            else
+            {
+                return Json(new { status = -1, msg = "验证码不正确" });
             }
         }
 

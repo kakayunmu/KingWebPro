@@ -37,6 +37,7 @@ namespace King.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(LoginModel model, string returnUrl = null)
         {
+            _logger.LogDebug(string.Format("用户登录 ：{0}", Newtonsoft.Json.JsonConvert.SerializeObject(model)));
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -58,9 +59,11 @@ namespace King.MVC.Controllers
                         expiresUtc = DateTime.UtcNow.AddDays(7);
                     }
                     await HttpContext.Authentication.SignInAsync("UserAuth", principal, new AuthenticationProperties { IsPersistent = true, ExpiresUtc = expiresUtc });
+                    _logger.LogDebug(string.Format("用户{0}登录成功",model.UserName));
                     return RedirectToLocal(returnUrl);
                 }
                 ModelState.AddModelError("Password", "用户名或密码错误");
+                _logger.LogDebug(string.Format("用户{0}登录失败", model.UserName));
             }
             return View(model);
         }
