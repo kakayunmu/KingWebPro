@@ -30,7 +30,7 @@ namespace King.EntityFrameworkCore
                 context.Users.Add(new User
                 {
                     UserName = "admin",
-                    Password = "123456",
+                    Password = "59E65E7010F71BE74C4F57624CC0D8AB",
                     Name = "超级管理员",
                     DepartmentId = departmentId
                 });

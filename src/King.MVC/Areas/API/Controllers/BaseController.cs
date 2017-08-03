@@ -5,16 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using King.EntityFrameworkCore;
 
 namespace King.MVC.Areas.API.Controllers
 {
     [Area("API")]
     public class BaseController : Controller
     {
+        protected readonly ILogger<BaseController> logger;
         protected IMemoryCache memoryCache;
-        public BaseController(IMemoryCache memoryCache)
+        protected KingDBContext dbContent;
+        public BaseController(IMemoryCache memoryCache, KingDBContext dbContent,ILogger<BaseController> logger)
         {
+            this.logger = logger;
             this.memoryCache = memoryCache;
+            this.dbContent = dbContent;
         }
         protected string accessToken;
         protected Domain.WagesEnities.Staff staff;

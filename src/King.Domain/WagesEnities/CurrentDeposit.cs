@@ -18,7 +18,7 @@ namespace King.Domain.WagesEnities
         /// </summary>
         public decimal Amount { get; set; }
         /// <summary>
-        /// 类型  1工资、2充值、3消费、4提现、5转出 6、利息收入
+        /// 类型  1工资、2充值、3消费、4提现、5转出 6、利息收入 7、转存
         /// </summary>
         public int MType { get; set; }
         /// <summary>

@@ -7,7 +7,7 @@ namespace King.Domain.WagesEnities
     /// <summary>
     /// 固定存款产品
     /// </summary>
-    public class FixedProduct:Entity
+    public class FixedProduct : Entity
     {
         /// <summary>
         /// 产品名称
@@ -25,6 +25,10 @@ namespace King.Domain.WagesEnities
         /// 年化利率
         /// </summary>
         public decimal AIRate { get; set; }
+        /// <summary>
+        /// 热销产品
+        /// </summary>
+        public int IsHot { get; set; }
         /// <summary>
         /// 是否已删除 0 正常 1 已删除
         /// </summary>

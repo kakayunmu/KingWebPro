@@ -9,28 +9,30 @@ using King.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace King.MVC.Areas.API.Controllers
 {
     [Produces("application/json")]
     public class BasicsController : BaseController
     {
-        private KingDBContext content;
-        public BasicsController(KingDBContext content, IMemoryCache memoryCache) : base(memoryCache)
+        public BasicsController(IMemoryCache memoryCache, KingDBContext dbContent, ILogger<BasicsController> logger) : base(memoryCache, dbContent,logger)
         {
-            this.content = content;
         }
+
         [HttpPost]
         public IActionResult Login(string mobile, string pwd)
         {
-            var ret = content.Staffs.FirstOrDefault(f => f.MobileNumber == mobile && f.Password == Utility.Security.Encryption.Md5WithSalt("KingWeb", pwd));
+            logger.LogDebug(string.Format("用户{0}登录ing",mobile));
+            var ret = dbContent.Staffs.FirstOrDefault(f => f.MobileNumber == mobile && f.Password == Utility.Security.Encryption.Md5WithSalt("KingWeb", pwd));
             if (ret != null)
             {
                 string accessToken = Guid.NewGuid().ToString();
                 memoryCache.Set(accessToken, ret, new TimeSpan(4, 0, 0));
                 ret.RefToken = Guid.NewGuid().ToString();
-                content.Staffs.Update(ret);
-                content.SaveChanges();
+                dbContent.Staffs.Update(ret);
+                dbContent.SaveChanges();
+                logger.LogDebug(string.Format("用户{0}登录成功", mobile));
                 return Json(new { status = 0, msg = "登录成功", accessToken = accessToken, staff = ret });
 
             }
@@ -47,14 +49,14 @@ namespace King.MVC.Areas.API.Controllers
             var mvcode = memoryCache.Get<MobileVCode>(mobile);
             if (mvcode != null && mvcode.vcode == vcode)
             {
-                var ret = content.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
+                var ret = dbContent.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
                 if (ret != null)
                 {
                     string accessToken = Guid.NewGuid().ToString();
                     memoryCache.Set(accessToken, ret, new TimeSpan(4, 0, 0));
                     ret.RefToken = Guid.NewGuid().ToString();
-                    content.Staffs.Update(ret);
-                    content.SaveChanges();
+                    dbContent.Staffs.Update(ret);
+                    dbContent.SaveChanges();
                     return Json(new { status = 0, msg = "登录成功", accessToken = accessToken, staff = ret });
                 }
             }
@@ -75,9 +77,10 @@ namespace King.MVC.Areas.API.Controllers
         public IActionResult RefAccessToken(string refToken)
         {
             string accessToken = Guid.NewGuid().ToString();
-            var staff = content.Staffs.FirstOrDefault(f => f.RefToken == refToken);
+            var staff = dbContent.Staffs.FirstOrDefault(f => f.RefToken == refToken);
             if (staff != null)
             {
+                memoryCache.Set(accessToken,staff);
                 return Json(new { status = 0, msg = "刷新Token成功", accessToken = accessToken, staff = staff });
             }
             else
@@ -89,7 +92,7 @@ namespace King.MVC.Areas.API.Controllers
         [HttpPost]
         public async Task<IActionResult> SendLoginVcode(string mobile)
         {
-            var staff = content.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
+            var staff = dbContent.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
             if (staff == null)
             {
                 return Json(new { status = -1, msg = "该手机号尚未登记为员工" });
@@ -149,12 +152,12 @@ namespace King.MVC.Areas.API.Controllers
             var mobileVCode = memoryCache.Get<MobileVCode>(mobile);
             if (mobileVCode != null && mobileVCode.vcode == vCode)
             {
-                var staff = content.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
+                var staff = dbContent.Staffs.FirstOrDefault(f => f.MobileNumber == mobile);
                 if (staff != null)
                 {
                     staff.Password = Utility.Security.Encryption.Md5WithSalt("KingWeb", newPwd);
-                    content.Staffs.Update(staff);
-                    content.SaveChanges();
+                    dbContent.Staffs.Update(staff);
+                    dbContent.SaveChanges();
                     return Json(new { status = 0, msg = "找回密码成功" });
                 }
                 else
@@ -172,9 +175,9 @@ namespace King.MVC.Areas.API.Controllers
         public IActionResult ChangePwd(string newPwd)
         {
             staff.Password = Utility.Security.Encryption.Md5WithSalt("KingWeb", newPwd);
-            content.Staffs.Update(staff);
+            dbContent.Staffs.Update(staff);
             memoryCache.Remove(accessToken);
-            content.SaveChanges();
+            dbContent.SaveChanges();
             return Json(new { status = 0, msg = "密码修改成功" });
         }
         public class MobileVCode

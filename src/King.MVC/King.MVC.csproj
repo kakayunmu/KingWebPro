@@ -66,6 +66,9 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Department\Index.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -34,6 +34,7 @@ function edit() {
     $("#AIRate").val(fixedProduct.aiRate);
     $("#TimeLimitUnit").val(fixedProduct.timeLimitUnit);
     $("#DataState").val(fixedProduct.dataState);
+    $("#IsHot").val(fixedProduct.isHot);
 
     $("#Title").text("编辑员工")
     $("#addRootModal").modal("show");
@@ -141,6 +142,9 @@ var TableInit = function () {
                 formatter: function (value) {
                     return value + "%";
                 }
+            }, {
+                field: "isHot",
+                title: "推荐级别"                
             }, {
                 field: "dataState",
                 title: "状态",

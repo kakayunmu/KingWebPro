@@ -27,6 +27,10 @@ namespace King.Application.FixedProductApp.Dtos
         /// </summary>
         public decimal AIRate { get; set; }
         /// <summary>
+        /// 推荐级别
+        /// </summary>
+        public int IsHot { get; set; }
+        /// <summary>
         /// 是否已删除 0 正常 1 已删除
         /// </summary>
         public int IsDel { get; set; }
