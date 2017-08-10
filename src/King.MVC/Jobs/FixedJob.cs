@@ -25,11 +25,22 @@ namespace King.MVC.Jobs
         public void Run()
         {
             logger.LogDebug("执行了FixedJob");
-            string sqlStr = "INSERT INTO fixedinterests SELECT UUID(), a.AIRate * 1.0 / 365 / 100 * Amount, NOW(), a.Id, 0 FROM fixeddeposits a LEFT JOIN (SELECT * FROM fixedinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 ) b ON a.id = b.FixedDepositId WHERE b.id IS NULL AND a.DataState = 0 AND DATEDIFF(NOW(), a.DumpTime) > 0 AND DATE_FORMAT(a.DumpTime, '%H%i%s') < DATE_FORMAT(NOW(), '%H%i%s')";
-            dbContext.Database.ExecuteSqlCommand(sqlStr);
-            string sqlStr2 = "UPDATE fixeddeposits a INNER JOIN (SELECT FixedDepositId, SUM(Amounts) AS Amounts FROM fixedinterest WHERE Settled = 0 GROUP BY FixedDepositId ) b ON a.id = b.FixedDepositId SET a.CumulativeAmount = a.CumulativeAmount + b.Amounts WHERE a.DataState = 0";
-            dbContext.Database.ExecuteSqlCommand(sqlStr2);
-            dbContext.Database.ExecuteSqlCommand("UPDATE fixedinterest SET Settled = 1 WHERE Settled = 0");
+            var t = dbContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+            try
+            {
+                string sqlStr = "INSERT INTO fixedinterests SELECT UUID(), a.AIRate * 1.0 / 365 / 100 * Amount, NOW(), a.Id, 0 FROM fixeddeposits a LEFT JOIN (SELECT * FROM fixedinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 ) b ON a.id = b.FixedDepositId WHERE b.id IS NULL AND a.DataState = 0 AND DATEDIFF(NOW(), a.DumpTime) > 0 AND DATE_FORMAT(a.DumpTime, '%H%i%s') < DATE_FORMAT(NOW(), '%H%i%s')";
+                dbContext.Database.ExecuteSqlCommand(sqlStr);
+                string sqlStr2 = "UPDATE fixeddeposits a INNER JOIN (SELECT FixedDepositId, SUM(Amounts) AS Amounts FROM fixedinterest WHERE Settled = 0 GROUP BY FixedDepositId ) b ON a.id = b.FixedDepositId SET a.CumulativeAmount = a.CumulativeAmount + b.Amounts WHERE a.DataState = 0";
+                dbContext.Database.ExecuteSqlCommand(sqlStr2);
+                dbContext.Database.ExecuteSqlCommand("UPDATE fixedinterest SET Settled = 1 WHERE Settled = 0");
+                t.Commit();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("执行FixedJob发生异常", ex);
+                t.Rollback();
+                return;
+            }
             var endFixedDiposits = dbContext.FixedDeposits.Where(fd => fd.DataState == 0 && fd.ExpireTime < DateTime.Now);
             foreach (var item in endFixedDiposits)
             {
