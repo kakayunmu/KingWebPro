@@ -29,6 +29,7 @@ namespace King.MVC.Areas.API.Controllers
             {
                 string accessToken = Guid.NewGuid().ToString();
                 memoryCache.Set(accessToken, ret, new TimeSpan(4, 0, 0));
+                memoryCache.Set(ret.Id, accessToken);
                 ret.RefToken = Guid.NewGuid().ToString();
                 dbContent.Staffs.Update(ret);
                 dbContent.SaveChanges();
@@ -38,7 +39,7 @@ namespace King.MVC.Areas.API.Controllers
             }
             else
             {
-                return Json(new { status = 0, msg = "密码不正确" });
+                return Json(new { status = -1, msg = "密码不正确" });
             }
 
         }
@@ -54,6 +55,7 @@ namespace King.MVC.Areas.API.Controllers
                 {
                     string accessToken = Guid.NewGuid().ToString();
                     memoryCache.Set(accessToken, ret, new TimeSpan(4, 0, 0));
+                    memoryCache.Set(ret.Id, accessToken);
                     ret.RefToken = Guid.NewGuid().ToString();
                     dbContent.Staffs.Update(ret);
                     dbContent.SaveChanges();
@@ -81,6 +83,7 @@ namespace King.MVC.Areas.API.Controllers
             if (staff != null)
             {
                 memoryCache.Set(accessToken,staff);
+                memoryCache.Set(staff.Id, accessToken);
                 return Json(new { status = 0, msg = "刷新Token成功", accessToken = accessToken, staff = staff });
             }
             else

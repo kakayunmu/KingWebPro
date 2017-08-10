@@ -53,5 +53,11 @@ namespace King.Domain.WagesEnities
         /// 转出时间
         /// </summary>
         public DateTime TurnOutTime { get; set; }
+        /// <summary>
+        /// 累计收益金额
+        /// </summary>
+        public decimal CumulativeAmount { get; set; }
+
+        public ICollection<FixedInterest> FixedInterests { get; set; }
     }
 }

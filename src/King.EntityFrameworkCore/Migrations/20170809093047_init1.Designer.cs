@@ -8,9 +8,10 @@ using King.EntityFrameworkCore;
 namespace King.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(KingDBContext))]
-    partial class KingDBContextModelSnapshot : ModelSnapshot
+    [Migration("20170809093047_init1")]
+    partial class init1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -184,11 +185,9 @@ namespace King.EntityFrameworkCore.Migrations
 
                     b.Property<DateTime>("CreateTime");
 
-                    b.Property<Guid?>("CurrentDepositId");
+                    b.Property<Guid>("CurrentDepositId");
 
                     b.Property<int>("Settled");
-
-                    b.Property<Guid>("StaffId");
 
                     b.HasKey("Id");
 
@@ -457,7 +456,8 @@ namespace King.EntityFrameworkCore.Migrations
                 {
                     b.HasOne("King.Domain.WagesEnities.CurrentDeposit")
                         .WithMany("CurrentInterests")
-                        .HasForeignKey("CurrentDepositId");
+                        .HasForeignKey("CurrentDepositId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("King.Domain.WagesEnities.FixedInterest", b =>

@@ -57,5 +57,14 @@ namespace King.Domain.WagesEnities
         [StringLength(maximumLength: 36)]
         public string RefToken { get; set; }
 
+        /// <summary>
+        /// 支付密码
+        /// </summary>
+        public string PaymentPwd { get; set; }
+        /// <summary>
+        /// 支付宝账号
+        /// </summary>
+        public string AlipayAccount { get; set; }
+
     }
 }

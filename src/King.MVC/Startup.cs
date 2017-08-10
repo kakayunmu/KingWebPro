@@ -50,6 +50,8 @@ namespace King.MVC
             services.AddMvc();
             //增加session服务
             services.AddSession();
+            //增加 TimedJob
+            services.AddTimedJob();
             //添加用户管理服务
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserAppService, UserAppService>();
@@ -76,6 +78,7 @@ namespace King.MVC
                 .AddDebug();
             loggerFactory.AddNLog();
             app.AddNLogWeb();
+            app.UseTimedJob();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

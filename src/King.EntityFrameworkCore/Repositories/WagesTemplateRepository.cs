@@ -5,13 +5,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace King.EntityFrameworkCore.Repositories
 {
     public class WagesTemplateRepository : KingRepositoryBase<WagesTemplate>, IWagesTemplateRepository
     {
-        public WagesTemplateRepository(KingDBContext dbContent) : base(dbContent)
+        private IMemoryCache memoryCache;
+        public WagesTemplateRepository(KingDBContext dbContent, IMemoryCache memoryCache) : base(dbContent)
         {
+            this.memoryCache = memoryCache;
         }
 
         public async Task BulkInsert(List<WagesTemplate> dataList)
@@ -83,6 +86,12 @@ namespace King.EntityFrameworkCore.Repositories
                     _dbContext.Staffs.Add(staffObj);
                 }
                 staffObj.CurrentAmount += item.Amount;
+                //刷新缓存
+                string accessToken = memoryCache.Get<string>(staffObj.Id);
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    memoryCache.Set(accessToken, staffObj);
+                }
                 //添加活期存款记录
                 _dbContext.CurrentDeposits.Add(new CurrentDeposit
                 {
@@ -104,6 +113,7 @@ namespace King.EntityFrameworkCore.Repositories
                 GrpupId = groupId
             });
             await Save();
+
         }
     }
 }

@@ -24,6 +24,9 @@ namespace King.EntityFrameworkCore
         public DbSet<Setting> Settings { get; set; }
         public DbSet<WithdrawalsApply> WithdrawalsApplys { get; set; }
         public DbSet<FixedDeposit> FixedDeposits { get; set; }
+        public DbSet<PaymentQRTmp> PaymentQRTmps { get; set; }
+        public DbSet<FixedInterest> FixedInterests { get; set; }
+        public DbSet<CurrentInterest> CurrentInterests { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

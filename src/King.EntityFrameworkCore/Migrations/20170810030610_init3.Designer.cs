@@ -8,8 +8,8 @@ using King.EntityFrameworkCore;
 namespace King.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(KingDBContext))]
-    [Migration("20170802145053_init")]
-    partial class init
+    [Migration("20170810030610_init3")]
+    partial class init3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -176,6 +176,28 @@ namespace King.EntityFrameworkCore.Migrations
                     b.ToTable("CurrentDeposits");
                 });
 
+            modelBuilder.Entity("King.Domain.WagesEnities.CurrentInterest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("Amounts");
+
+                    b.Property<DateTime>("CreateTime");
+
+                    b.Property<Guid?>("CurrentDepositId");
+
+                    b.Property<int>("Settled");
+
+                    b.Property<Guid>("StaffId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentDepositId");
+
+                    b.ToTable("CurrentInterests");
+                });
+
             modelBuilder.Entity("King.Domain.WagesEnities.FixedDeposit", b =>
                 {
                     b.Property<Guid>("Id")
@@ -184,6 +206,8 @@ namespace King.EntityFrameworkCore.Migrations
                     b.Property<decimal>("AIRate");
 
                     b.Property<decimal>("Amount");
+
+                    b.Property<decimal>("CumulativeAmount");
 
                     b.Property<int>("DataState");
 
@@ -208,12 +232,34 @@ namespace King.EntityFrameworkCore.Migrations
                     b.ToTable("FixedDeposits");
                 });
 
+            modelBuilder.Entity("King.Domain.WagesEnities.FixedInterest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("Amounts");
+
+                    b.Property<DateTime>("CreateTime");
+
+                    b.Property<Guid>("FixedDepositId");
+
+                    b.Property<int>("Settled");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FixedDepositId");
+
+                    b.ToTable("FixedInterests");
+                });
+
             modelBuilder.Entity("King.Domain.WagesEnities.FixedProduct", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<decimal>("AIRate");
+
+                    b.Property<DateTime>("CreateTime");
 
                     b.Property<int>("DataState");
 
@@ -230,6 +276,26 @@ namespace King.EntityFrameworkCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FixedProducts");
+                });
+
+            modelBuilder.Entity("King.Domain.WagesEnities.PaymentQRTmp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("Amount");
+
+                    b.Property<DateTime>("CreateTime");
+
+                    b.Property<bool>("IsPay");
+
+                    b.Property<Guid>("StaffId");
+
+                    b.Property<Guid>("ToStaffId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentQRTmps");
                 });
 
             modelBuilder.Entity("King.Domain.WagesEnities.Setting", b =>
@@ -259,6 +325,8 @@ namespace King.EntityFrameworkCore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("AlipayAccount");
+
                     b.Property<DateTime>("CreateTime");
 
                     b.Property<decimal>("CurrentAmount");
@@ -281,6 +349,8 @@ namespace King.EntityFrameworkCore.Migrations
 
                     b.Property<string>("Password")
                         .HasMaxLength(50);
+
+                    b.Property<string>("PaymentPwd");
 
                     b.Property<string>("RefToken")
                         .HasMaxLength(36);
@@ -381,6 +451,21 @@ namespace King.EntityFrameworkCore.Migrations
                     b.HasOne("King.Domain.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("King.Domain.WagesEnities.CurrentInterest", b =>
+                {
+                    b.HasOne("King.Domain.WagesEnities.CurrentDeposit")
+                        .WithMany("CurrentInterests")
+                        .HasForeignKey("CurrentDepositId");
+                });
+
+            modelBuilder.Entity("King.Domain.WagesEnities.FixedInterest", b =>
+                {
+                    b.HasOne("King.Domain.WagesEnities.FixedDeposit")
+                        .WithMany("FixedInterests")
+                        .HasForeignKey("FixedDepositId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

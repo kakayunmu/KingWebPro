@@ -5,14 +5,14 @@ using System.Text;
 namespace King.Domain.WagesEnities
 {
     /// <summary>
-    /// 固定存款每日利息记录
+    /// 活期存款每日利息记录
     /// </summary>
-    public class FixedInterest : Entity
+    public class CurrentInterest : Entity
     {
         /// <summary>
-        /// 存款记录ID
+        /// 员工ID
         /// </summary>
-        public Guid FixedDepositId { get; set; }
+        public Guid StaffId { get; set; }
         /// <summary>
         /// 金额
         /// </summary>

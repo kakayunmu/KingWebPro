@@ -4,26 +4,27 @@ using System.Text;
 
 namespace King.Domain.WagesEnities
 {
-    /// <summary>
-    /// 固定存款每日利息记录
-    /// </summary>
-    public class FixedInterest : Entity
+    public class PaymentQRTmp:Entity
     {
         /// <summary>
-        /// 存款记录ID
+        /// 员工ID
         /// </summary>
-        public Guid FixedDepositId { get; set; }
+        public Guid StaffId { get; set; }
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amounts { get; set; }
+        public decimal Amount { get; set; }
         /// <summary>
-        /// 产生日期
+        /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
         /// <summary>
-        /// 是否已结算 0 未结算 1 已结算
+        /// 是否已付款
         /// </summary>
-        public int Settled { get; set; }
+        public bool IsPay { get; set; }
+        /// <summary>
+        /// 收款人
+        /// </summary>
+        public Guid ToStaffId { get; set; }
     }
 }

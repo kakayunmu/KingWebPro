@@ -20,7 +20,7 @@ namespace King.MVC.Components
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var user = await _userAppService.Get(Guid.Parse(User.GetClaimVal(ClaimTypes.NameIdentifier)));
-            user.HeadImg = string.IsNullOrEmpty(user.HeadImg) ? "img/user3-160x160.jpg" : user.HeadImg;
+            user.HeadImg = string.IsNullOrEmpty(user.HeadImg) ? "img/user9-560x560.jpg" : user.HeadImg;
             return View(user);
         }
 

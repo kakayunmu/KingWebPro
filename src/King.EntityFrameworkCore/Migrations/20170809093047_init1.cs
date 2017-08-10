@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace King.EntityFrameworkCore.Migrations
 {
-    public partial class init : Migration
+    public partial class init1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -92,6 +92,7 @@ namespace King.EntityFrameworkCore.Migrations
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
                     AIRate = table.Column<decimal>(nullable: false),
                     Amount = table.Column<decimal>(nullable: false),
+                    CumulativeAmount = table.Column<decimal>(nullable: false),
                     DataState = table.Column<int>(nullable: false),
                     DumpTime = table.Column<DateTime>(nullable: false),
                     ExpireTime = table.Column<DateTime>(nullable: false),
@@ -114,6 +115,7 @@ namespace King.EntityFrameworkCore.Migrations
                     Id = table.Column<Guid>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
                     AIRate = table.Column<decimal>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false),
                     DataState = table.Column<int>(nullable: false),
                     IsDel = table.Column<int>(nullable: false),
                     IsHot = table.Column<int>(nullable: false),
@@ -124,6 +126,23 @@ namespace King.EntityFrameworkCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FixedProducts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentQRTmps",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true),
+                    Amount = table.Column<decimal>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false),
+                    IsPay = table.Column<bool>(nullable: false),
+                    StaffId = table.Column<Guid>(nullable: false),
+                    ToStaffId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentQRTmps", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -150,6 +169,7 @@ namespace King.EntityFrameworkCore.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
+                    AlipayAccount = table.Column<string>(nullable: true),
                     CreateTime = table.Column<DateTime>(nullable: false),
                     CurrentAmount = table.Column<decimal>(nullable: false),
                     FixedAmount = table.Column<decimal>(nullable: false),
@@ -159,6 +179,7 @@ namespace King.EntityFrameworkCore.Migrations
                     MobileNumber = table.Column<string>(maxLength: 11, nullable: true),
                     Name = table.Column<string>(maxLength: 10, nullable: true),
                     Password = table.Column<string>(maxLength: 50, nullable: true),
+                    PaymentPwd = table.Column<string>(nullable: true),
                     RefToken = table.Column<string>(maxLength: 36, nullable: true)
                 },
                 constraints: table =>
@@ -273,6 +294,50 @@ namespace King.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CurrentInterests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true),
+                    Amounts = table.Column<decimal>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false),
+                    CurrentDepositId = table.Column<Guid>(nullable: false),
+                    Settled = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CurrentInterests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CurrentInterests_CurrentDeposits_CurrentDepositId",
+                        column: x => x.CurrentDepositId,
+                        principalTable: "CurrentDeposits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FixedInterests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true),
+                    Amounts = table.Column<decimal>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false),
+                    FixedDepositId = table.Column<Guid>(nullable: false),
+                    Settled = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FixedInterests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FixedInterests_FixedDeposits_FixedDepositId",
+                        column: x => x.FixedDepositId,
+                        principalTable: "FixedDeposits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
                 {
@@ -310,6 +375,16 @@ namespace King.EntityFrameworkCore.Migrations
                 name: "IX_UserRoles_RoleId",
                 table: "UserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CurrentInterests_CurrentDepositId",
+                table: "CurrentInterests",
+                column: "CurrentDepositId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FixedInterests_FixedDepositId",
+                table: "FixedInterests",
+                column: "FixedDepositId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -321,13 +396,16 @@ namespace King.EntityFrameworkCore.Migrations
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "CurrentDeposits");
+                name: "CurrentInterests");
 
             migrationBuilder.DropTable(
-                name: "FixedDeposits");
+                name: "FixedInterests");
 
             migrationBuilder.DropTable(
                 name: "FixedProducts");
+
+            migrationBuilder.DropTable(
+                name: "PaymentQRTmps");
 
             migrationBuilder.DropTable(
                 name: "Settings");
@@ -352,6 +430,12 @@ namespace King.EntityFrameworkCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "CurrentDeposits");
+
+            migrationBuilder.DropTable(
+                name: "FixedDeposits");
 
             migrationBuilder.DropTable(
                 name: "Departments");
