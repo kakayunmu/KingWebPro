@@ -21,23 +21,23 @@ namespace King.MVC.Jobs
             this.dbContext = dbContext;
             this.memoryCache = memoryCache;
         }
-        [Invoke(Begin = "2017-08-09 00:00:00", Interval = 1000 * 60 * 10, SkipWhileExecuting = true)]
+        [Invoke(Begin = "2017-08-09 00:00:00", Interval = 1000 * 60 * 5, SkipWhileExecuting = true)]
         public void Run()
         {
             logger.LogDebug("执行了FixedJob");
             var t = dbContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
             try
             {
-                string sqlStr = "INSERT INTO fixedinterests SELECT UUID(), a.AIRate * 1.0 / 365 / 100 * Amount, NOW(), a.Id, 0 FROM fixeddeposits a LEFT JOIN (SELECT * FROM fixedinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 ) b ON a.id = b.FixedDepositId WHERE b.id IS NULL AND a.DataState = 0 AND DATEDIFF(NOW(), a.DumpTime) > 0 AND DATE_FORMAT(a.DumpTime, '%H%i%s') < DATE_FORMAT(NOW(), '%H%i%s')";
+                string sqlStr = "INSERT INTO fixedinterests (Id,Amounts,CreateTime,FixedDepositId,Settled) SELECT UUID(), a.AIRate * 1.0 / 365 / 100 * Amount, NOW(), a.Id, 0 FROM fixeddeposits a LEFT JOIN (SELECT * FROM fixedinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 ) b ON a.id = b.FixedDepositId WHERE b.id IS NULL AND a.DataState = 0 AND DATEDIFF(NOW(), a.DumpTime) > 0 AND DATE_FORMAT(a.DumpTime, '%H%i%s') < DATE_FORMAT(NOW(), '%H%i%s')";
                 dbContext.Database.ExecuteSqlCommand(sqlStr);
-                string sqlStr2 = "UPDATE fixeddeposits a INNER JOIN (SELECT FixedDepositId, SUM(Amounts) AS Amounts FROM fixedinterest WHERE Settled = 0 GROUP BY FixedDepositId ) b ON a.id = b.FixedDepositId SET a.CumulativeAmount = a.CumulativeAmount + b.Amounts WHERE a.DataState = 0";
+                string sqlStr2 = "UPDATE fixeddeposits a INNER JOIN (SELECT FixedDepositId, SUM(Amounts) AS Amounts FROM fixedinterests WHERE Settled = 0 GROUP BY FixedDepositId ) b ON a.id = b.FixedDepositId SET a.CumulativeAmount = a.CumulativeAmount + b.Amounts WHERE a.DataState = 0";
                 dbContext.Database.ExecuteSqlCommand(sqlStr2);
-                dbContext.Database.ExecuteSqlCommand("UPDATE fixedinterest SET Settled = 1 WHERE Settled = 0");
+                dbContext.Database.ExecuteSqlCommand("UPDATE fixedinterests SET Settled = 1 WHERE Settled = 0");
                 t.Commit();
             }
             catch (Exception ex)
             {
-                logger.LogError("执行FixedJob发生异常", ex);
+                logger.LogError(string.Format("执行FixedJob发生异常:{0}/n/r{1}", ex.Message, ex.StackTrace));
                 t.Rollback();
                 return;
             }
@@ -59,7 +59,8 @@ namespace King.MVC.Jobs
             var accessToken = memoryCache.Get<string>(staff.Id);
             if (!string.IsNullOrEmpty(accessToken))
             {
-                memoryCache.Set(accessToken, staff);
+                memoryCache.Set(staff.Id, accessToken, new TimeSpan(4, 0, 0));
+                memoryCache.Set(accessToken, staff, new TimeSpan(4, 0, 0));
             }
             dbContext.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
             {

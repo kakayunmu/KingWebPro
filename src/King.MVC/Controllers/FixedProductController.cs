@@ -41,6 +41,10 @@ namespace King.MVC.Controllers
             try
             {
                 dto.CreateTime = DateTime.Now;
+                if (dto.Id == Guid.Empty)
+                {
+                    dto.CreateTime = DateTime.Now;
+                }
                 await _fpAppService.InsertOrUpdate(dto);
                 return Json(new
                 {

@@ -48,6 +48,16 @@ namespace King.MVC.Controllers
                     dto.FixedAmount = 0;
                     dto.IsDel = 0;
                 }
+                else
+                {
+                    var old = await _staffAppService.Get(dto.Id);
+                    dto.CreateTime = DateTime.Now;
+                    dto.Password = old.Password;
+                    dto.HeadImg = old.HeadImg;
+                    dto.CurrentAmount = old.CurrentAmount;
+                    dto.FixedAmount = old.FixedAmount;
+                    dto.IsDel = old.IsDel;                     
+                }
                 await _staffAppService.InsertOrUpdate(dto);
                 return Json(new { Result = "Success", Message = "保存数据成功" });
             }

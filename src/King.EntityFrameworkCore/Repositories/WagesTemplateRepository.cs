@@ -90,7 +90,8 @@ namespace King.EntityFrameworkCore.Repositories
                 string accessToken = memoryCache.Get<string>(staffObj.Id);
                 if (!string.IsNullOrEmpty(accessToken))
                 {
-                    memoryCache.Set(accessToken, staffObj);
+                    memoryCache.Set(staffObj.Id, accessToken, new TimeSpan(4, 0, 0));
+                    memoryCache.Set(accessToken, staffObj,new TimeSpan(4, 0, 0));
                 }
                 //添加活期存款记录
                 _dbContext.CurrentDeposits.Add(new CurrentDeposit

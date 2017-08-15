@@ -187,7 +187,10 @@ namespace King.EntityFrameworkCore.Repositories
         {
             foreach (var mItem in typeof(T).GetProperties())
             {
-                mItem.SetValue(pTargetObjDest, mItem.GetValue(pTargetObjSrc, new object[] { }), null);
+                var obj = mItem.GetValue(pTargetObjSrc, new object[] { });
+           
+                    mItem.SetValue(pTargetObjDest,obj, null);
+                
             }
             return Task.FromResult(0);
         }

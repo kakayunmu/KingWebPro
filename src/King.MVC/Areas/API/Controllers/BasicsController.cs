@@ -29,7 +29,7 @@ namespace King.MVC.Areas.API.Controllers
             {
                 string accessToken = Guid.NewGuid().ToString();
                 memoryCache.Set(accessToken, ret, new TimeSpan(4, 0, 0));
-                memoryCache.Set(ret.Id, accessToken);
+                memoryCache.Set(ret.Id, accessToken, new TimeSpan(4, 0, 0));
                 ret.RefToken = Guid.NewGuid().ToString();
                 dbContent.Staffs.Update(ret);
                 dbContent.SaveChanges();

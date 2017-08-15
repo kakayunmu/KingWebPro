@@ -21,7 +21,7 @@ namespace King.MVC.Jobs
             this.dbContext = dbContext;
             this.memoryCache = memoryCache;
         }
-        [Invoke(Begin = "2017-08-09 00:10:00", Interval = 1000 * 60 * 60 * 24, SkipWhileExecuting = true)]
+        [Invoke(Begin = "2017-08-09 00:00:00", Interval = 1000 * 60 * 60, SkipWhileExecuting = true)]
         public void Run()
         {
             logger.LogDebug("执行了CurrentJob");
@@ -31,19 +31,28 @@ namespace King.MVC.Jobs
                 logger.LogWarning("执行CurrentJob 时发现配置是空的，结束执行");
                 return;
             }
-            logger.LogDebug(setting.GeneralInterestRate + "");
-            string sql = "INSERT INTO currentinterests SELECT UUID(), a.CurrentAmount * " + setting.GeneralInterestRate + " / 365/100, NOW(), a.Id, 0 FROM staffs a LEFT JOIN (SELECT * FROM currentinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 ) b ON a.Id = b.StaffId WHERE a.IsDel = 0 AND CurrentAmount > 0 AND b.Id IS NULL";
+            string sql = "INSERT INTO currentinterests (Id, Amounts, CreateTime, StaffId, Settled) SELECT UUID() AS Id, a.CurrentAmount * " + setting.GeneralInterestRate + " / 365 / 100 AS Amounts, NOW() AS CreateTime, a.Id AS StaffId, 0 AS Settled FROM staffs a LEFT JOIN (SELECT * FROM currentinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 ) b ON a.Id = b.StaffId WHERE a.IsDel = 0 AND CurrentAmount > 0 AND b.Id IS NULL";
             var transaction = dbContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
             try
             {
                 dbContext.Database.ExecuteSqlCommand(sql);
-                dbContext.Database.ExecuteSqlCommand("UPDATE staffs a INNER JOIN (SELECT * FROM currentdeposits WHERE DATEDIFF(CreateTime, NOW()) = 0 AND Settled = 0 ) b ON a.Id = b.StaffId SET a.CurrentAmount = a.CurrentAmount + b.Amounts WHERE a.IsDel = 0");
-                dbContext.Database.ExecuteSqlCommand("UPDATE currentinterests SET Settled=1 where Setled=0");
+                dbContext.Database.ExecuteSqlCommand("UPDATE staffs a INNER JOIN (SELECT * FROM currentinterests WHERE DATEDIFF(CreateTime, NOW()) = 0 AND Settled = 0 ) b ON a.Id = b.StaffId SET a.CurrentAmount = a.CurrentAmount + b.Amounts WHERE a.IsDel = 0");
+                var cis = dbContext.CurrentInterests.Where(ci => ci.Settled == 0).Select(ci => ci.StaffId);
+                foreach (var item in cis)
+                {
+                    var accessToken = memoryCache.Get<string>(item);
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        memoryCache.Set(item.ToString(), accessToken, new TimeSpan(4, 0, 0));
+                        memoryCache.Set(accessToken, dbContext.Staffs.FirstOrDefault(sf => sf.Id == item));
+                    }
+                }
+                dbContext.Database.ExecuteSqlCommand("UPDATE currentinterests SET Settled=1 where Settled=0");
                 transaction.Commit();
             }
             catch (Exception ex)
             {
-                logger.LogError("执行CurrentJob 发生异常", ex);
+                logger.LogError(string.Format("执行CurrentJob 发生异常：{0}/n/r{1}", ex.Message, ex.StackTrace));
                 transaction.Rollback();
             }
         }

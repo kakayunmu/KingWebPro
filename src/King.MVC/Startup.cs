@@ -52,7 +52,7 @@ namespace King.MVC
             services.AddSession();
             //增加 TimedJob
             services.AddTimedJob();
-            //添加用户管理服务
+            //添加用户管理服务            
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserAppService, UserAppService>();
             services.AddScoped<IMenuRepository, MenuRepository>();

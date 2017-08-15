@@ -98,7 +98,7 @@ namespace King.MVC.Areas.API.Controllers
             {
                 Id = Guid.NewGuid(),
                 AIRate = fixedProduct.AIRate,
-                Amount = amount * -1,
+                Amount = amount,
                 DataState = 0,
                 DumpTime = DateTime.Now,
                 ExpireTime = fixedProduct.TimeLimitUnit == 0 ? DateTime.Now.AddDays(fixedProduct.TimeLimit) : DateTime.Now.AddMonths(fixedProduct.TimeLimit),
@@ -115,12 +115,24 @@ namespace King.MVC.Areas.API.Controllers
                 Amount = amount,
                 CreateTime = DateTime.Now,
                 MType = 7,
-                Remarks = string.Format("产品 [{0}] 期限[{1}] 年化[{2}]", fixedProduct.Name, fixedProduct.TimeLimitUnit == 0 ? fixedProduct.TimeLimit + "天" : fixedProduct.TimeLimit + "个月", string.Format( "{0:#,##0.00}",fixedProduct.AIRate) + "%"),
+                Remarks = string.Format("产品 [{0}] 期限[{1}] 年化[{2}]", fixedProduct.Name, fixedProduct.TimeLimitUnit == 0 ? fixedProduct.TimeLimit + "天" : fixedProduct.TimeLimit + "个月", string.Format("{0:#,##0.00}", fixedProduct.AIRate) + "%"),
                 StaffId = staff.Id
             };
             dbContent.CurrentDeposits.Add(currentDeposit);
             dbContent.SaveChanges();
             return Json(new { status = 0, msg = "转存成功" });
+        }
+
+        [HttpGet]
+        public IActionResult GetFixeDeposits(int pageIndex, int pageSize)
+        {
+            var fixedDeposits = dbContent.FixedDeposits.Where(fd => fd.StaffId == staff.Id && fd.DataState == 0).OrderByDescending(fd => fd.DumpTime);
+            return Json(new
+            {
+                status = 0,
+                msg = "获取数据成功",
+                fixedDeposits = fixedDeposits.Skip((pageIndex - 1) * pageSize).Take(pageSize)
+            });
         }
 
         [HttpPost]
@@ -143,33 +155,64 @@ namespace King.MVC.Areas.API.Controllers
             return Json(new { status = 0, msg = "生成付款码成功", qrcode = paymentQR.Id });
         }
 
-        //public IActionResult DoPayment(Guid qrcode)
-        //{
-        //    var paymentQR = dbContent.PaymentQRTmps.FirstOrDefault(pq => pq.Id == qrcode && pq.IsPay == false && (DateTime.Now - pq.CreateTime).Minutes <= 5);
-        //    if (paymentQR == null)
-        //    {
-        //        return Json(new { status = -1, msg = "" });
-        //    }
-        //    paymentQR.IsPay = true;
-        //    paymentQR.ToStaffId = staff.Id;
-        //    dbContent.PaymentQRTmps.Update(paymentQR);
+        [HttpPost]
+        public IActionResult DoPayment(Guid qrcode)
+        {
+            var paymentQR = dbContent.PaymentQRTmps.FirstOrDefault(pq => pq.Id == qrcode && pq.IsPay == false && (DateTime.Now - pq.CreateTime).Minutes <= 5);
+            if (paymentQR == null)
+            {
+                return Json(new { status = -1, msg = "无效/失效的二维码" });
+            }
+            paymentQR.IsPay = true;
+            paymentQR.ToStaffId = staff.Id;
+            dbContent.PaymentQRTmps.Update(paymentQR);
 
-        //    //payer
-        //    var payerStaff = dbContent.Staffs.FirstOrDefault(sf => sf.Id == paymentQR.StaffId);
-        //    payerStaff.CurrentAmount -= paymentQR.Amount;
-        //    dbContent.Staffs.Update(payerStaff);
+            //payer
+            var payerStaff = dbContent.Staffs.FirstOrDefault(sf => sf.Id == paymentQR.StaffId);
+            payerStaff.CurrentAmount -= paymentQR.Amount;
+            dbContent.Staffs.Update(payerStaff);
 
-        //    dbContent.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Amount = paymentQR.Amount,
-        //        CreateTime = DateTime.Now,
-        //        MType = 5,
-        //        StaffId = payerStaff.Id,
-        //        Remarks = string.Format("转账给{0}", staff.Name)
-        //    });
+            dbContent.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
+            {
+                Id = Guid.NewGuid(),
+                Amount = paymentQR.Amount * -1,
+                CreateTime = DateTime.Now,
+                MType = 5,
+                StaffId = payerStaff.Id,
+                Remarks = string.Format("转账给{0}", staff.Name)
+            });
 
-        //}
+            //geter
+            staff.CurrentAmount += paymentQR.Amount;
+            dbContent.Staffs.Update(staff);
+
+            dbContent.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
+            {
+                Id = Guid.NewGuid(),
+                Amount = paymentQR.Amount,
+                CreateTime = DateTime.Now,
+                MType = 5,
+                StaffId = staff.Id,
+                Remarks = string.Format("收到 {0} 转账", payerStaff.Name)
+            });
+            dbContent.SaveChanges();
+
+            //更新缓存
+            string accessToken = memoryCache.Get<string>(payerStaff.Id);
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                memoryCache.Set(payerStaff.Id, accessToken, new TimeSpan(4, 0, 0));
+                memoryCache.Set(accessToken, payerStaff, new TimeSpan(4, 0, 0));
+            }
+            accessToken = memoryCache.Get<string>(staff.Id);
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                memoryCache.Set(staff.Id, accessToken, new TimeSpan(4, 0, 0));
+                memoryCache.Set(accessToken, staff, new TimeSpan(4, 0, 0));
+            }
+
+            return Json(new { status = 0, msg = "操作成功" });
+        }
 
     }
 
