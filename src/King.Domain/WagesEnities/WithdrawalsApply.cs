@@ -22,7 +22,7 @@ namespace King.Domain.WagesEnities
         /// </summary>
         public DateTime ApplyTime { get; set; }
         /// <summary>
-        /// 审核状态 0 未审核 1 审核通过 2 审核不通过
+        /// 审核状态 0 未审核 1 审核通过 2 审核不通过 3 自动通过
         /// </summary>
         public int ApplyState { get; set; }
         /// <summary>
@@ -33,5 +33,9 @@ namespace King.Domain.WagesEnities
         /// 审核时间
         /// </summary>
         public DateTime AuditorTime { get; set; }
+        /// <summary>
+        /// 支付状态 0 未支付 1 支付中 2 支付成功 3 支付失败
+        /// </summary>
+        public int PayState { get; set; }
     }
 }

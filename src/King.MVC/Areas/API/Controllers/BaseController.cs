@@ -67,8 +67,10 @@ namespace King.MVC.Areas.API.Controllers
         {
             if (context.Exception != null)
             {
+                logger.LogError(context.Exception.Message);
                 context.Result = Json(new { status = -1, msg = context.Exception.Message });
                 context.Exception = null;
+               
             }
             else
             {
