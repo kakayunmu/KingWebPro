@@ -34,6 +34,10 @@ namespace King.Domain.WagesEnities
         /// </summary>
         public DateTime AuditorTime { get; set; }
         /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+        /// <summary>
         /// 支付状态 0 未支付 1 支付中 2 支付成功 3 支付失败
         /// </summary>
         public int PayState { get; set; }

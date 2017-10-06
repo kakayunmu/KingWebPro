@@ -29,13 +29,63 @@ namespace King.MVC.Areas.API.Controllers
         {
             return Json(new { status = 0, msg = "获取数据成功", staff = staff });
         }
+        //生成用户二维码
+        [HttpGet]
+        public IActionResult GetStaffQR([FromServices]IHostingEnvironment env)
+        {
+            string fileName = Path.Combine("qrcode", string.Format("{0}_{1}.png", "in", staff.Id));
+            if (!System.IO.File.Exists(Path.Combine(env.WebRootPath, fileName)))
+            {
+                if (!Directory.Exists(Path.Combine(env.WebRootPath, "qrcode")))
+                {
+                    Directory.CreateDirectory(Path.Combine(env.WebRootPath, "qrcode"));
+                }
+                var height = 500;
+                var widht = 500;
+                var margin = 0;
+                var Options = new ZXing.Common.EncodingOptions()
+                {
+                    Height = height,
+                    Width = widht,
+                    Margin = margin
+                };
+                Options.Hints.Add( ZXing.EncodeHintType.ERROR_CORRECTION, ZXing.QrCode.Internal.ErrorCorrectionLevel.H);
+                var qrCodeWriter = new ZXing.BarcodeWriterPixelData()
+                {
+                    Format = ZXing.BarcodeFormat.QR_CODE,
+                    Options =Options
+                };
+               
+
+                var pixelData = qrCodeWriter.Write("{\"type\":\"in\",\"data\":\""+ staff.Id + "\"}");
+                using (var bitmap = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb))
+                {
+                    using (var ms = new FileStream(Path.Combine(env.WebRootPath,fileName), FileMode.OpenOrCreate))
+                    {
+                        var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height),
+                                                         System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                        try
+                        {
+                            System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
+                        }
+                        finally
+                        {
+                            bitmap.UnlockBits(bitmapData);
+                        }
+                        bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        ms.Flush();
+                    }
+                }
+            }
+            return Json(new { status=0,msg="获取数据成功",qrurl= string.Format("qrcode/{0}_{1}.png", "in", staff.Id), headImg = staff.HeadImg});
+        }
         //获取固定记录
         [HttpGet]
         public IActionResult GetFixedDeposit(int pageIndex = 1, int pageSize = 10)
         {
 
             var totalFDAmount = dbContent.FixedDeposits.Where(fd => fd.DataState == 0 && fd.StaffId == staff.Id).Sum(fd => fd.Amount);
-            var totalFIAmount = dbContent.FixedDeposits.Where(fd => fd.StaffId == staff.Id).Sum(fd => fd.CumulativeAmount);
+            var totalFIAmount = dbContent.FixedDeposits.Where(fd =>  fd.StaffId == staff.Id).Sum(fd => fd.CumulativeAmount);
             var fixedDeposits = dbContent.FixedDeposits.Where(fd => fd.StaffId == staff.Id)
                 .Select(fd => new
                 {
@@ -219,6 +269,14 @@ namespace King.MVC.Areas.API.Controllers
                 return Json(new { status = -1, msg = "验证码不正确" });
             }
         }
+        //提现记录
+        [HttpGet]
+        public IActionResult GetWithdrawalsApplys(int pageIndex = 1, int pageSize = 15)
+        {
+            var withdrawalsApplys = dbContent.WithdrawalsApplys.Where(wa => wa.StaffId == staff.Id)
+                .OrderByDescending(wa => wa.ApplyTime);
+            return Json(new { status = 0, msg = "获取数据成功", data = withdrawalsApplys.Skip((pageIndex - 1) * pageSize).Take(pageSize) });
+        }
         /// <summary>
         /// 退出登录
         /// </summary>
@@ -230,5 +288,7 @@ namespace King.MVC.Areas.API.Controllers
             memoryCache.Remove(staff.Id);
             return Json(new { status = 0, msg = "退出登录成功" });
         }
+
+
     }
 }

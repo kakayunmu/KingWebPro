@@ -412,6 +412,10 @@ namespace King.EntityFrameworkCore.Migrations
 
                     b.Property<DateTime>("AuditorTime");
 
+                    b.Property<int>("PayState");
+
+                    b.Property<string>("Remark");
+
                     b.Property<Guid>("StaffId");
 
                     b.HasKey("Id");

@@ -13,19 +13,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\qrcode\**" />
+    <Content Remove="wwwroot\qrcode\**" />
+    <EmbeddedResource Remove="wwwroot\qrcode\**" />
+    <None Remove="wwwroot\qrcode\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Remove="Properties\PublishProfiles\FolderProfile.pubxml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="wwwroot\css\googlefonts\fonts_googleapis_com.css" />
-    <Content Include="wwwroot\img\user9-560x560.jpg" />
-    <Content Include="wwwroot\js\jquery.slimscroll.js" />
-    <Content Include="wwwroot\js\jquery.slimscroll.min.js" />
-    <Content Include="wwwroot\js\king.js" />
-    <Content Include="wwwroot\js\main.js" />
-    <Content Include="wwwroot\template\wagesTemplate.xlsx" />
-  </ItemGroup>
+
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0-msbuild3-final" />
   </ItemGroup>
@@ -48,6 +47,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.1.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.1" />
     <PackageReference Include="TimedJob" Version="2.0.0" />
+    <PackageReference Include="ZXing.Net" Version="0.16.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\King.Application\King.Application.csproj" />
@@ -81,6 +81,9 @@
     <None Update="Views\FixedProduct\Index.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Views\Home\Index.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Menu\Index.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -94,6 +97,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Views\User\Index.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\WagesRecord\Index.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Views\WagesTemplate\Index.css">

@@ -96,6 +96,9 @@ var TableInit = function () {
                 field: "amount",
                 title: "提现金额"
             }, {
+                field: "alipayAccount",
+                title: "支付宝账号"
+            }, {
                 field: "applyTime",
                 title: "提现时间",
                 formatter: function (value) {
@@ -121,6 +124,8 @@ var TableInit = function () {
                             return "审核通过";
                         case 2:
                             return "审核不通过";
+                        case 3:
+                            return "自动通过";
                     }
                 }
             }]

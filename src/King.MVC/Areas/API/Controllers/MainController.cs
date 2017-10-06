@@ -18,6 +18,7 @@ namespace King.MVC.Areas.API.Controllers
         {
         }
 
+        #region 获取总额
         [HttpGet]
         public IActionResult GetTotalAmount()
         {
@@ -35,19 +36,27 @@ namespace King.MVC.Areas.API.Controllers
                 }
             });
         }
+        #endregion
+
+        #region 获取固定产品
         [HttpGet]
         public IActionResult GetFixedProducts(int pageIndex = 1, int pageSize = 10)
         {
             var fixProds = dbContent.FixedProducts.Where(fp => fp.IsDel == 0 && fp.DataState == 0).OrderByDescending(fp => fp.IsHot);
             return Json(new { status = 0, msg = "获取数据成功", fixedProducts = fixProds.Skip((pageIndex - 1) * pageSize).Take(pageSize) });
         }
+        #endregion
+
+        #region 获取最热产品
         [HttpGet]
         public IActionResult GetMaxHotFProduct()
         {
             var fixProd = dbContent.FixedProducts.OrderByDescending(fp => fp.IsHot).FirstOrDefault(fp => fp.IsDel == 0 && fp.DataState == 0);
             return Json(new { status = 0, msg = "获取数据成功", fixedProduct = fixProd });
         }
+        #endregion
 
+        #region 获取固定产品详情
         [HttpGet]
         public IActionResult GetFixedProduct(Guid proId)
         {
@@ -61,6 +70,9 @@ namespace King.MVC.Areas.API.Controllers
                 return Json(new { status = -1, msg = "未能找到对应产品" });
             }
         }
+        #endregion
+
+        #region 获取活期交易记录
         [HttpGet]
         public IActionResult GetCurrentDeposits(int pageIndex = 1, int pageSize = 10)
         {
@@ -73,7 +85,9 @@ namespace King.MVC.Areas.API.Controllers
                 currentDeposits = currentDeposits.Skip((pageIndex - 1) * pageSize).Take(pageSize)
             });
         }
-        //转存
+        #endregion
+
+        #region 转存
         [HttpPost]
         public IActionResult DumpFixed(Guid productId, decimal amount)
         {
@@ -122,7 +136,9 @@ namespace King.MVC.Areas.API.Controllers
             dbContent.SaveChanges();
             return Json(new { status = 0, msg = "转存成功" });
         }
+        #endregion
 
+        #region 获取定存记录
         [HttpGet]
         public IActionResult GetFixeDeposits(int pageIndex, int pageSize)
         {
@@ -134,7 +150,9 @@ namespace King.MVC.Areas.API.Controllers
                 fixedDeposits = fixedDeposits.Skip((pageIndex - 1) * pageSize).Take(pageSize)
             });
         }
+        #endregion
 
+        #region 暂时无用了
         [HttpPost]
         public IActionResult CreateQRCode(decimal amount)
         {
@@ -213,11 +231,151 @@ namespace King.MVC.Areas.API.Controllers
 
             return Json(new { status = 0, msg = "操作成功" });
         }
+        #endregion
 
-        //public IActionResult 
+        #region 提现
+        [HttpPost]
+        public IActionResult Withdrawals(string payPwd, decimal amount)
+        {
+            var payPwdMd5 = Utility.Security.Encryption.Md5WithSalt("KingWeb", payPwd);
+            if (amount < 1)
+            {
+                return Json(new { status = -1, msg = "最小提现金额为1元" });
+            }
+            if (staff.PaymentPwd != payPwdMd5)
+            {
+                return Json(new { status = -1, msg = "交易密码不正确！" });
+            }
+            if (staff.CurrentAmount < amount)
+            {
+                return Json(new { status = -1, msg = "余额不足" });
+            }
+            staff.CurrentAmount -= amount;
+            dbContent.Staffs.Update(staff);
+            dbContent.WithdrawalsApplys.Add(new Domain.WagesEnities.WithdrawalsApply()
+            {
+                Amount = amount,
+                ApplyState = 0,
+                ApplyTime = DateTime.Now,
+                Id = Guid.NewGuid(),
+                PayState = 0,
+                StaffId = staff.Id
+            });
+            dbContent.SaveChanges();
+            return Json(new { status = 0, msg = "提现已发送申请" });
+        }
+        #endregion
+
+        #region 固存转活期
+        [HttpPost]
+        public IActionResult FixedToCurrent(Guid fdId)
+        {
+            var fixedDeposit = dbContent.FixedDeposits.FirstOrDefault(fd => fd.Id == fdId);
+            if (fixedDeposit == null)
+            {
+                return Json(new { status = -1, msg = "未找到定存记录" });
+            }
+            var setting = dbContent.Settings.FirstOrDefault();
+            decimal shouyi = setting.GeneralInterestRate / 100 / 12 / 30 * fixedDeposit.Amount * (DateTime.Now - fixedDeposit.DumpTime).Days;
+            fixedDeposit.DataState = 2;
+            fixedDeposit.Remarks = string.Format("固存转活期 {0}天 年化{1} 实际收益 {2}元", (DateTime.Now - fixedDeposit.DumpTime).Days, string.Format("{0:#,##0.00}",setting.GeneralInterestRate),string.Format("{0:#,##0.00}", shouyi));
+            fixedDeposit.CumulativeAmount = shouyi;
+            dbContent.FixedDeposits.Update(fixedDeposit);
+
+            staff.FixedAmount -= fixedDeposit.Amount;
+            staff.CurrentAmount += fixedDeposit.Amount + fixedDeposit.CumulativeAmount;
+            dbContent.Staffs.Update(staff);
+
+            dbContent.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
+            {
+                Id = Guid.NewGuid(),
+                Amount = fixedDeposit.CumulativeAmount,
+                CreateTime = DateTime.Now,
+                MType = 6,
+                StaffId = staff.Id,
+                Remarks = fixedDeposit.Remarks,
+                JsonObj = Newtonsoft.Json.JsonConvert.SerializeObject(fixedDeposit)
+            });
+
+            dbContent.SaveChanges();
+
+            //刷新缓存
+            var accessToken = memoryCache.Get<string>(staff.Id);
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                memoryCache.Set(staff.Id, accessToken, new TimeSpan(4, 0, 0));
+                memoryCache.Set(accessToken, staff, new TimeSpan(4, 0, 0));
+            }
+
+            return Json(new { status=0,msg="处理成功"});
+        }
+        #endregion
+
+        #region 扫一扫转账
+        [HttpPost]
+        public IActionResult ScanPay(Guid targetStaffId, decimal payMoney)
+        {
+            if (payMoney <= 0)
+            {
+                return Json(new { status = -1, msg = "金额不能小于零" });
+            }
+            if (staff.CurrentAmount < payMoney)
+            {
+                return Json(new { status = -1, msg = "余额不足" });
+            }
+            var targetStaff = dbContent.Staffs.FirstOrDefault(sf => sf.Id == targetStaffId);//目标员工
+            if (targetStaff == null)
+            {
+                return Json(new { status = -1, msg = "未找到转账对象" });
+            }
+            targetStaff.CurrentAmount += payMoney;
+            dbContent.Update(targetStaff);
+
+            staff.CurrentAmount -= payMoney;
+            dbContent.Update(staff);
+
+            dbContent.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
+            {
+                Id = Guid.NewGuid(),
+                Amount = payMoney * -1,
+                CreateTime = DateTime.Now,
+                MType = 5,
+                StaffId = staff.Id,
+                Remarks = string.Format("转账给{0}", targetStaff.Name)
+            });
+
+            dbContent.CurrentDeposits.Add(new Domain.WagesEnities.CurrentDeposit()
+            {
+                Id = Guid.NewGuid(),
+                Amount = payMoney,
+                CreateTime = DateTime.Now,
+                MType = 5,
+                StaffId = targetStaff.Id,
+                Remarks = string.Format("收到 {0} 转账", staff.Name)
+            });
+            dbContent.SaveChanges();
+
+            //更新缓存
+            string accessToken = memoryCache.Get<string>(targetStaff.Id);
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                memoryCache.Set(targetStaff.Id, accessToken, new TimeSpan(4, 0, 0));
+                memoryCache.Set(accessToken, targetStaff, new TimeSpan(4, 0, 0));
+            }
+            accessToken = memoryCache.Get<string>(staff.Id);
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                memoryCache.Set(staff.Id, accessToken, new TimeSpan(4, 0, 0));
+                memoryCache.Set(accessToken, staff, new TimeSpan(4, 0, 0));
+            }
+
+            return Json(new { status = 0, msg = "操作成功" });
+        }
+        #endregion
 
     }
 
+    #region 返回值实体类
     public class TotalAmountModel
     {
         public decimal GeneralInterestRate { get; set; }
@@ -225,4 +383,5 @@ namespace King.MVC.Areas.API.Controllers
         public decimal FixedAmount { get; set; }
         public decimal TotalAmount { get; set; }
     }
+    #endregion
 }

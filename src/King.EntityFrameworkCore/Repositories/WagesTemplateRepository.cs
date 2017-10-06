@@ -76,7 +76,7 @@ namespace King.EntityFrameworkCore.Repositories
                         CreateTime = DateTime.Now,
                         CurrentAmount = 0,
                         FixedAmount = 0,
-                        HeadImg = "img / user3 - 160x160.jpg",
+                        HeadImg = "img/user2-160x160.jpg",
                         IDNumber = item.IDNumber,
                         IsDel = 0,
                         MobileNumber = item.MobileNumber,
