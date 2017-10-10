@@ -38,6 +38,7 @@ namespace King.MVC.Controllers
                     CreateTime = cd.CreateTime
 
                 }).OrderByDescending(cd => cd.CreateTime);
+
             return Json(new PageData<WRModel>()
             {
                 Total = result.Count(),

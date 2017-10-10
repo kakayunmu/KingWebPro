@@ -124,4 +124,16 @@ namespace King.Domain.IRepositories
         /// </summary>
         public int Total { get; set; }
     }
+    public class PageData2<T>
+    {
+        /// <summary>
+        /// 查询的数据
+        /// </summary>
+        public List<T> Rows { get; set; }
+        /// <summary>
+        /// 总数据数
+        /// </summary>
+        public Int64 Total { get; set; }
+    }
+
 }

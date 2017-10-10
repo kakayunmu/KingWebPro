@@ -1,5 +1,6 @@
 ﻿$(function () {
     loadTables();
+    $("#seachBtn").on("click", DoSearch);
 });
 
 var $table = $('#tb_data');
@@ -16,11 +17,17 @@ function loadTables() {
 var TableInit = function () {
     var oTableInit = new Object();
     oTableInit.queryParams = function (params) {
+        var searchFelds = new Array();
+        var staffName = $("#staffName").val();
+        if (staffName != "") {
+            searchFelds.push({ "Field": "staffName", "Val": staffName });
+        }
         var temp = {
             StartPage: params.offset / params.limit + 1,
             PageSize: params.limit,
             Order: params.order,
-            Sort: params.sort
+            Sort: params.sort,
+            SearchFelds: searchFelds
         };
         return temp;
     };
@@ -48,10 +55,10 @@ var TableInit = function () {
                 field: "amount",
                 title: "金额"
             }, {
-                    field: "remark",
+                field: "remark",
                 title: "月份"
             }, {
-                    field: "createTime",
+                field: "createTime",
                 title: "发放时间",
                 formatter: function (value) {
                     return moment(value).format("YYYY-MM-DD HH:mm:ss ");
@@ -61,3 +68,7 @@ var TableInit = function () {
     };
     return oTableInit;
 };
+
+function DoSearch() {
+    loadTables();
+}
