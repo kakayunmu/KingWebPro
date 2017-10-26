@@ -110,7 +110,7 @@ var TableInit = function () {
             sidePagination: "server",
             pageNumber: 1,
             pageSize: 10,
-            pageList: [10, 25, 50, 100],
+            pageList: [10, 25, 50, 100, 200],
             queryParams: oTableInit.queryParams,
             clickToSelect: true,
             columns: [{
@@ -123,14 +123,37 @@ var TableInit = function () {
                 title: "身份证"
             }, {
                 field: "mobileNumber",
-                title: "手机号"
+                title: "手机号",
+                footerFormatter: function (rows) {
+                    return "小计：";
+                }
             }, {
                 field: "currentAmount",
-                title: "活期账号金额"
+                title: "活期账号金额",
+                formatter: function (value) {
+                    return $global.formatNumber(value, "#,##0.00");
+                },
+                footerFormatter: function (rows) {
+                    var total = 0;
+                    for (var i = 0; i < rows.length; i++) {
+                        total += rows[i].currentAmount;
+                    }
+                    return Math.round(total * 100) / 100;
+                }
             }, {
                 field: "fixedAmount",
                 title: "固定存款",
-                align: "right"
+                align: "right",
+                formatter: function (value) {
+                    return $global.formatNumber(value, "#,##0.00");
+                },
+                footerFormatter: function (rows) {
+                    var total = 0;
+                    for (var i = 0; i < rows.length; i++) {
+                        total += rows[i].fixedAmount;
+                    }
+                    return Math.round(total * 100) / 100;
+                }
             }, {
                 field: "createTime",
                 title: "创建时间",

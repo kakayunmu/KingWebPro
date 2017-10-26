@@ -98,7 +98,7 @@ namespace King.Application.WagesTemplateApp
                         it.Message = "本次导入存在重复人员";
                     });
             }
-            list.FindAll(it => it.IsMapping != 3 && it.Amount <= 0).ForEach(it =>
+            list.FindAll(it => it.IsMapping != 3 ).ForEach(it =>
             {
                 it.IsMapping = 3;
                 it.Message = "导入金额不正确。";

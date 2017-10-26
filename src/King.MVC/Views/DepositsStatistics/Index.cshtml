@@ -1,0 +1,38 @@
+﻿<div class=" row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">提现转账记录</h3>
+                <div class="pull-right box-tools">
+                </div>
+            </div>
+            <div class="box-body">
+                <form class="form-horizontal">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="staffName" class="col-sm-2 control-label">姓名</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="staffName" placeholder="输入姓名查询">
+                            </div>
+                            <label for="stime" class="col-sm-2 control-label">月份</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="stime" value="@DateTime.Now.ToString("yyyy-MM")" placeholder="如：2017-10">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        <button type="button" id="seachBtn" class="btn btn-info pull-right">查询</button>
+                    </div>
+                    <!-- /.box-footer -->
+                </form>
+                <div class="table-scrollable">
+                    <table id="tb_data" ></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Views/DepositsStatistics/Index.js?ts=@DateTime.Now.Ticks"></script>
+}
