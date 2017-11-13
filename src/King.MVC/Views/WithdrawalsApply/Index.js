@@ -9,12 +9,17 @@ function fnAudit() {
         layer.msg("请选择需要处理的数据");
         return;
     }
+    var flg = true;
     $.each(rows, function () {
         if (this.applyState != 0) {
             layer.msg("选择的数据中存在已审核过的数据，请重新选择");
+            flg = false;
             return;
         }
     });
+    if (!flg) {
+        return;
+    }
     layer.alert("请对你选择的数据选择操作", {
         btn: ['通过', '不通过', '取消'],
         yes: function (index, layero) {

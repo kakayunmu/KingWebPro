@@ -187,7 +187,7 @@ function chart3() {
                 type: 'bar',
                 label: {
                     normal: {
-                        show: true,
+                        show: false,
                         position: 'top'
                     }
                 },

@@ -3,7 +3,7 @@
 }
 <div class="box box-primary" id="importbox">
     <div class="box-header with-border">
-        <h3 class="box-title">文件上传</h3>   
+        <h3 class="box-title">文件上传</h3>
     </div>
     <form method="post" enctype="multipart/form-data">
         <div class="box-body">
@@ -37,7 +37,7 @@
     </div>
     <div class="box-footer">
         <div class="help-block" id="importTip" style="display:inline-block">请仔细检查数据，确认无误后点击导入。</div>
-        <button type="button" id="importbtn" class="btn btn-success pull-right disabled">确定导入</button>
+        <button type="button" id="importbtn" disabled="disabled" class="btn btn-success pull-right disabled">确定导入</button>
     </div>
 </div>
 @section scripts{
@@ -57,6 +57,9 @@
                     <th>
                         金额
                     </th>
+                    <th>
+                        备注
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -66,6 +69,7 @@
                     <td>{{=value.idNumber}}</td>
                     <td>{{=value.mobileNumber}}</td>
                     <td>{{=value.amount}}</td>
+                    <td>{{=value.remark}}</td>
                 </tr>
                 {{~}}
             </tbody>

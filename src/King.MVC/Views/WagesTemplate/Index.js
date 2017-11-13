@@ -66,6 +66,7 @@ function doCompare() {
                 $("#compareViewArea").html(dotTmp(ret.data));
                 if (ret.flg) {
                     $("#importbtn").removeClass("disabled");
+                    $("#importbtn").removeAttr("disabled");
                 } else {
                     $("#importTip").html("经系统检查，存在错误数据，请按照提示修改导入文件。然后重新执行 <a href='/wagesTemplate'>导入</a> 操作。");
                 }

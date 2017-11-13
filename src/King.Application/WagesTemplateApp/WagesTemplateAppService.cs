@@ -63,6 +63,12 @@ namespace King.Application.WagesTemplateApp
                         decimal.TryParse(worksheet.Cells[row, 4].Value.ToString(), out amount);
                     }
                     wagesTemplate.Amount = amount;
+                    object remark = worksheet.Cells[row, 5].Value;
+                    if (remark != null)
+                    {
+                        wagesTemplate.Remark = remark.ToString();
+                    }
+
                     li.Add(wagesTemplate);
                 }
             }
@@ -98,11 +104,11 @@ namespace King.Application.WagesTemplateApp
                         it.Message = "本次导入存在重复人员";
                     });
             }
-            list.FindAll(it => it.IsMapping != 3 ).ForEach(it =>
-            {
-                it.IsMapping = 3;
-                it.Message = "导入金额不正确。";
-            });
+            list.FindAll(it => it.IsMapping != 3 && it.Amount == 0).ForEach(it =>
+           {
+               it.IsMapping = 3;
+               it.Message = "导入金额不正确。";
+           });
             var empQuery = from li in list
                            where li.IsMapping == 2 && (string.IsNullOrEmpty(li.StaffName) || string.IsNullOrEmpty(li.IDNumber) || string.IsNullOrEmpty(li.MobileNumber))
                            select li;

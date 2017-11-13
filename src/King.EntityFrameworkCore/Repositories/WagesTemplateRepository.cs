@@ -60,7 +60,8 @@ namespace King.EntityFrameworkCore.Repositories
                             StaffName = wt.StaffName,
                             Amount = wt.Amount,
                             IsMapping = sf != null ? 1 : 2,
-                            StaffId = sf != null ? sf.Id : Guid.Empty
+                            StaffId = sf != null ? sf.Id : Guid.Empty,
+                            Remark=wt.Remark
                         };
 
 
@@ -100,7 +101,7 @@ namespace King.EntityFrameworkCore.Repositories
                     Amount = item.Amount,
                     CreateTime = DateTime.Now,
                     MType = 1,
-                    Remarks = DateTime.Now.ToString("yyyy年MM月 工资发放"),
+                    Remarks = DateTime.Now.ToString("yyyy年MM月 工资发放")+(string.IsNullOrEmpty(item.Remark)?"":" 备注："+item.Remark),
                     StaffId = staffObj.Id
                 });
 

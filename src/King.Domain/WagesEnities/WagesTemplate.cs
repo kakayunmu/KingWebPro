@@ -30,5 +30,9 @@ namespace King.Domain.WagesEnities
         /// 日期
         /// </summary>
         public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
     }
 }
